@@ -323,8 +323,8 @@ class Cliente{
 			}
 		
 		int getCedula(){
-			cout<<"Este es el codiguito: ";
-			cout<<Cedula<<endl;
+			//cout<<"Este es el codiguito: ";
+			//cout<<Cedula<<endl;
 			return Cedula;
 		}
 		
@@ -658,7 +658,7 @@ class nodo {
         
    friend class listaDC;
 	friend class ArregloClaves;
-	friend class ArbolClientes;
+	friend class ArbolB;
 	friend class PilaB;
 };
 
@@ -778,15 +778,15 @@ public:
     bool Esta;
     int llamadas;
 
-    friend class ArbolClientes;
+    friend class ArbolB;
 
 };
 
-class ArbolClientes
+class ArbolB
 {
 public:
 
-    ArbolClientes(){raizB = NULL;}
+    ArbolB(){raizB = NULL;}
     bool BVacio(){return raizB == NULL;}
     void EstablecerRaizB(ApuntadorPagina Raiz);
     void IniciarInsercionB(int Numero, int _id, string _nombre, string _direccion, string _telefono);
@@ -812,18 +812,18 @@ public:
 };
 
 
-void ArbolClientes::EstablecerRaizB(ApuntadorPagina Raiz)
+void ArbolB::EstablecerRaizB(ApuntadorPagina Raiz)
 {
     raizB = Raiz;
 }
 
-void ArbolClientes::IniciarInsercionB(int Numero, int _id, string _nombre, string _direccion, string _telefono)
+void ArbolB::IniciarInsercionB(int Numero, int _id, string _nombre, string _direccion, string _telefono)
 {
     ApuntadorPagina Raiz = raizB;
     raizB = InsertarB(Raiz,Numero,  _id,  _nombre,  _direccion,  _telefono);
 }
 
-ApuntadorPagina ArbolClientes::InsertarB(ApuntadorPagina Raiz, int Numero, int _id, string _nombre, string _direccion, string _telefono)
+ApuntadorPagina ArbolB::InsertarB(ApuntadorPagina Raiz, int Numero, int _id, string _nombre, string _direccion, string _telefono)
 {
     ApuntadorPagina P = NULL;
 
@@ -851,7 +851,7 @@ ApuntadorPagina ArbolClientes::InsertarB(ApuntadorPagina Raiz, int Numero, int _
 
 }
 
-ApuntadorPagina ArbolClientes::EmpujarB(ApuntadorPagina Raiz, int Numero, int _id, string _nombre, string _direccion, string _telefono)
+ApuntadorPagina ArbolB::EmpujarB(ApuntadorPagina Raiz, int Numero, int _id, string _nombre, string _direccion, string _telefono)
 {
     if(Raiz == NULL){
         Raiz = new Pagina();
@@ -891,7 +891,7 @@ ApuntadorPagina ArbolClientes::EmpujarB(ApuntadorPagina Raiz, int Numero, int _i
     }
 }
 
-ApuntadorPagina ArbolClientes::BuscarNodoB(ApuntadorPagina Raiz, int Numero)
+ApuntadorPagina ArbolB::BuscarNodoB(ApuntadorPagina Raiz, int Numero)
 {
     int PClave1 = Raiz->Claves->ObtenerClave(1);
     if(Numero < PClave1){
@@ -911,7 +911,7 @@ ApuntadorPagina ArbolClientes::BuscarNodoB(ApuntadorPagina Raiz, int Numero)
     return Raiz;
 }
 
-ApuntadorPagina ArbolClientes::MeterHojaB(ApuntadorPagina Raiz, int _id, string _nombre, string _direccion, string _telefono)
+ApuntadorPagina ArbolB::MeterHojaB(ApuntadorPagina Raiz, int _id, string _nombre, string _direccion, string _telefono)
 {
     int I;
     I = Raiz->cuenta;
@@ -936,7 +936,7 @@ ApuntadorPagina ArbolClientes::MeterHojaB(ApuntadorPagina Raiz, int _id, string 
 
 }
 
-ApuntadorPagina ArbolClientes::DividirNodoB(ApuntadorPagina Raiz, int _id, string _nombre, string _direccion, string _telefono)
+ApuntadorPagina ArbolB::DividirNodoB(ApuntadorPagina Raiz, int _id, string _nombre, string _direccion, string _telefono)
 {
     int I;
     int Posmda;
@@ -977,13 +977,13 @@ ApuntadorPagina ArbolClientes::DividirNodoB(ApuntadorPagina Raiz, int _id, strin
     return Raiz;
 }
 
-void ArbolClientes::IniciarRecorridoB()
+void ArbolB::IniciarRecorridoB()
 {
     ApuntadorPagina Raiz = raizB;
     RecorridoInordenB(Raiz);
 }
 
-void ArbolClientes::RecorridoInordenB(ApuntadorPagina Raiz){
+void ArbolB::RecorridoInordenB(ApuntadorPagina Raiz){
     if(Raiz == NULL){
         return;
     }
@@ -1007,7 +1007,7 @@ void ArbolClientes::RecorridoInordenB(ApuntadorPagina Raiz){
     }
 }
 /*														/////////////////////////////////REVISAR
-bool ArbolClientes::existeCliente(ApuntadorPagina Raiz ,int _Numero) {
+bool ArbolB::existeCliente(ApuntadorPagina Raiz ,int _Numero) {
     if (Raiz == NULL) {
         return false;
 
@@ -2570,6 +2570,15 @@ int main()
 	ListaProveedores.InordenR(r);
 	ListaProveedores.PostordenR(r);
 	ListaProveedores.PreordenR(r);
+	
+	ArbolB B;
+	B.IniciarInsercionB(88,88,"Roberto","Heredia", "86582179");
+	ApuntadorPagina a = B.raizB;
+	B.RecorridoInordenB(a);
+	
+	B.IniciarInsercionB(89,89,"Roberto","Heredia", "86582179");
+	B.RecorridoInordenB(a);
+	
 	
 	
 	/*
