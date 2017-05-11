@@ -1,0 +1,59 @@
+10;01;Hogar y Limpieza
+15;02;Bebidas
+20;03;Embutidos
+10;04;Enlatados
+10;02;Carnes
+15;10;Frutas
+15;15;Verduras
+15;16;Panadería y dulces
+20;20;Lácteos
+20;01;Huevos
+25;60;Huevos
+25;03;Café
+10;33;Café
+35;36;Aceites
+35;50;Pastas
+45;56;Legumbres
+10;60;Conservas
+78;61;Comida Preparada
+78;74;Aperitivos
+10;19;Infantil
+66;45;Algas
+66;30;Cosmética y cuidado personal
+66;451;Hogar y Limpieza
+98;142;Bebidas
+98;693;Embutidos
+98;784;Enlatados
+74;142;Carnes
+74;130;Frutas
+74;157;Verduras
+51;168;Panadería y dulces
+51;209;Lácteos
+51;01;Huevos
+44;604;Huevos
+44;435;Café
+44;233;Café
+31;326;Aceites
+31;520;Pastas
+31;562;Legumbres
+24;260;Conservas
+24;621;Comida Preparada
+28;764;Aperitivos
+28;169;Infantil
+21;459;Algas
+21;390;Cosmética y cuidado personal
+05;157;Verduras
+05;168;Panadería y dulces
+07;209;Lácteos
+07;01;Huevos
+08;604;Huevos
+08;435;Café
+25;233;Café
+25;326;Aceites
+110;520;Pastas
+110;562;Legumbres
+112;260;Conservas
+112;621;Comida Preparada
+456;764;Aperitivos
+456;169;Infantil
+335;459;Algas

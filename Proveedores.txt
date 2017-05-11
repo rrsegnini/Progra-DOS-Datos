@@ -1,5 +1,44 @@
-01;Pedro;Heredia;84376405
-02;Esteban;SanJose;67893342
-03;Luis;Alajuela;88560123
-08;Laura;Alajuela;45976112
-04;Alejandro;Cartago;7885855
+01;Jesús;Heredia;843
+02;Nancy;SanJose;678
+03;Leonardo;Alajuela;885
+01;Laura;Alajuela;459
+04;Alejandro;Cartago;486
+08;Álvaro;Desamparados;412
+04;Manuel;Cartago;486
+12;Juan;Naranjo;789
+21;Clorex;Perez Zeledón;563
+23;Paula;Alajuela;147
+15;Eduardo;Limón;321
+01;Jesús;Heredia;843
+56;Nancy;SanJose;678
+67;Leonardo;Alajuela;885
+50;Laura;Alajuela;459
+33;Alejandro;Cartago;486
+32;Álvaro;Desamparados;412
+12;Manuel;Cartago;486
+89;Juan;Naranjo;789
+100;Clorex;Perez Zeledón;563
+78;Paula;Alajuela;147
+88;Eduardo;Limón;321
+41;Jesús;Heredia;843
+82;Nancy;SanJose;678
+63;Leonardo;Alajuela;885
+11;Laura;Alajuela;459
+123;Alejandro;Cartago;486
+457;Álvaro;Desamparados;412
+54;Manuel;Cartago;486
+89;Juan;Naranjo;789
+92;Clorex;Perez Zeledón;563
+354;Paula;Alajuela;147
+36;Eduardo;Limón;321
+70;Jesús;Heredia;843
+71;Nancy;SanJose;678
+85;Leonardo;Alajuela;885
+86;Laura;Alajuela;459
+41;Alejandro;Cartago;486
+42;Álvaro;Desamparados;412
+49;Manuel;Cartago;486
+94;Juan;Naranjo;789
+170;Clorex;Perez Zeledón;563
+778;Paula;Alajuela;147
+884;Eduardo;Limón;321

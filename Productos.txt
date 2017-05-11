@@ -1,5 +1,98 @@
-01;01;Rinso;1000;20
-02;01;Irex;900;25
-03;02;CocaCola;1200;15
-04;02;Fanta;1100;20
-04;02;Pepsi;800;30
+10;01;01;Rinso;1000;20
+10;01;02;Irex;900;25
+10;01;03;Cepillo de dientes;600;100
+10;01;04;Pasta de dientes;2000;45
+10;01;05;Jabón Palmolive;600;78
+66;01;06;Jabón Bactex;400;60
+66;01;07;Shampoo Dove;2500;70
+66;01;08;Shampoo Pantene;3500;46
+66;101;09;Vanish;4000;60
+66;01;10;Bandeja de aluminio;600;30
+10;01;04;Jabón Palmolive;2000;45
+10;01;05;Shampoo Pantene;600;78
+66;01;06;Vanish;400;60
+66;01;07;Bandeja de aluminio;2500;70
+20;01;08;Shampoo Pantene;3500;46
+20;01;09;Shampoo Dove;4000;60
+10;01;10;Vanish;600;30
+15;02;10;CocaCola;1200;15
+15;02;24;Fanta;1100;20
+15;02;54;Pepsi;800;30
+15;02;25;Tropical;1200;45
+15;02;26;Vino Tinto;12000;40
+98;02;27;Néctar Manzana;600;50
+98;02;28;Jugo naranja;3000;30
+98;03;30;Salchicón;3000;46
+20;03;31;Jamón;3500;78
+20;03;32;Chorizo;4000;69
+10;04;41;Atún;800;40
+98;04;42;Sardina;1200;60
+10;04;43;Frijoles;600;41
+15;10;50;Sandía;2000;45
+15;10;51;Papaya;1500;40
+15;10;74;Maracuyá;460;12
+15;10;15;Piña;600;10
+15;10;74;Banano;100;16
+74;10;15;Manzana;50;20
+74;15;60;Chile;400;10
+74;15;61;Cebolla;300;15
+15;15;62;Lechuga;600;70
+74;15;63;Pepino;500;14
+20;20;70;Leche;600;78
+20;20;71;Natilla;800;50
+20;20;72;Queso;1500;30
+51;20;73;Helado;600;40
+51;60;80;Huevos;1200;50
+25;33;81;Café;3000;65
+10;19;91;Pañales;5000;40
+10;19;92;Toallas Húmedas;1500;20
+66;30;57;Esmalte;2000;25
+66;451;01;Rinso;1000;20
+66;451;02;Irex;900;25
+10;451;03;Cepillo de dientes;600;100
+66;451;04;Pasta de dientes;2000;45
+66;451;05;Jabón Palmolive;600;78
+10;01;06;Jabón Bactex;400;60
+66;01;07;Shampoo Dove;2500;70
+10;01;08;Shampoo Pantene;3500;46
+10;01;09;Vanish;4000;60
+10;01;10;Bandeja de aluminio;600;30
+66;01;04;Jabón Palmolive;2000;45
+10;01;05;Shampoo Pantene;600;78
+66;01;06;Vanish;400;60
+10;01;07;Bandeja de aluminio;2500;70
+66;01;08;Shampoo Pantene;3500;46
+10;01;09;Shampoo Dove;4000;60
+10;01;10;Vanish;600;30
+98;142;23;CocaCola;1200;15
+98;142;24;Fanta;1100;20
+98;142;54;Pepsi;800;30
+98;142;25;Tropical;1200;45
+15;02;26;Vino Tinto;12000;40
+15;02;27;Néctar Manzana;600;50
+15;02;28;Jugo naranja;3000;30
+98;693;30;Salchicón;3000;46
+98;693;31;Jamón;3500;78
+98;693;32;Chorizo;4000;69
+98;784;41;Atún;800;40
+98;784;42;Sardina;1200;60
+10;04;43;Frijoles;600;41
+74;130;50;Sandía;2000;45
+15;130;51;Papaya;1500;40
+31;130;52;Maracuyá;460;12
+31;130;53;Piña;600;10
+51;10;54;Banano;100;16
+51;10;55;Manzana;50;20
+78;157;60;Chile;400;10
+78;157;61;Cebolla;300;15
+44;157;62;Lechuga;600;70
+44;15;63;Pepino;500;14
+25;20;70;Leche;600;78
+25;209;71;Natilla;800;50
+35;209;72;Queso;1500;30
+35;209;73;Helado;600;40
+45;60;80;Huevos;1200;50
+45;233;81;Café;3000;65
+20;19;91;Pañales;5000;40
+15;19;92;Toallas Húmedas;1500;20
+10;30;52;Esmalte;2000;25

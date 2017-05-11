@@ -364,8 +364,50 @@ class Cliente{
 };
 
 
-//////////////END CLASES PARA LOS ARCHIVOS DE TEXTO//////////////
+class Supermercado{
+	
+	public:
+		Supermercado(){
+		Codigo = 0;
+		codigoLugar = 0;
+		Nombre = "Nulo";
+		
+		}
+		
+		Supermercado(int _code, int _codLugar, string _name)
+			{
+			Codigo = _code;
+			Nombre = _name;
+			codigoLugar = _codLugar;			
+			}
+		
+		int getCodigo(){
+			//cout<<Codigo<<endl;
+			return Codigo;
+		}
+		
+		string getNombre(){
+			//cout<<Nombre<<endl;
+			return Nombre;
+		}
+		
 
+		int getCodigoLugar(){
+			return codigoLugar;
+		}
+		
+		
+	private:
+		int Codigo;
+		string Nombre;
+		int codigoLugar;
+	
+	
+		
+};
+
+
+//////////////END CLASES PARA LOS ARCHIVOS DE TEXTO//////////////
 
 
 
@@ -557,6 +599,29 @@ class nodo {
 		//Fin Constructor int
 		
 		
+		
+		
+		//Constructor Supermercado
+	    nodo(Supermercado* v)
+			{
+	    	valorS = v;
+	    	siguiente = NULL;
+	    	anterior =NULL;
+	    	
+	    	Hizq = NULL;
+			Hder = NULL;
+			//padre=NULL;
+	    	}
+		
+	   nodo(Supermercado* v, nodo * signodo)
+	    {
+	    	
+	       valorS = v;
+	       siguiente = signodo;
+	    }
+		//Fin Constructor Supermercado
+		
+		
 		//Constructor Proveedor
 		nodo(Proveedor *v)
 			{
@@ -580,6 +645,10 @@ class nodo {
 	    	valorC = v;
 	    	siguiente = NULL;
 	    	anterior =NULL;
+	    	
+	    	Hizq = NULL;
+			Hder = NULL;
+			padre=NULL;
 	    	}
 		
 	   nodo(Categoria* v, nodo * signodo)
@@ -641,6 +710,8 @@ class nodo {
 	    }
 		//Fin Constructor Cliente
 		
+		void InsertaAVL(int _code, int _codLugar, string _name);
+		
 		
  private:
     int valor;
@@ -649,9 +720,16 @@ class nodo {
     Producto* valorPp;
     Cliente* valorCl;
     ItemFactura* valorF;
+    Supermercado* valorS;
     
     nodo *siguiente;
     nodo *anterior;
+    
+    nodo * Hizq;
+	nodo * Hder;
+	
+	nodo *padre;
+	bool color;
     
     
     
@@ -660,10 +738,299 @@ class nodo {
 	friend class ArregloClaves;
 	friend class ArbolB;
 	friend class PilaB;
+	friend class ArbolRN;
+	friend class ArbolAVL;
+	
 };
 
 typedef nodo *pnodo;
 
+
+
+void nodo::InsertaAVL(int _code, int _codLugar, string _name)
+{
+    if(valorS->getCodigo()<valor){
+        if(Hizq==NULL){
+        	Supermercado * ss = new Supermercado(_code, _codLugar, _name);
+            Hizq = new nodo(ss);
+        }else{
+            Hizq->InsertaAVL(_code, _codLugar, _name);
+        }
+    }if(valorS->getCodigo()>valor){
+        if(Hder==NULL){
+        	Supermercado * sss = new Supermercado(_code, _codLugar, _name);
+            Hder = new nodo(sss);
+        }else{
+            Hder->InsertaAVL(_code, _codLugar, _name);
+        }
+    }
+}
+
+///////////////////////////AVL/////////////////////////////////
+
+class ArbolAVL{
+  public:
+    nodo *raiz;
+
+    ArbolAVL():raiz(NULL){}
+
+    void InsertaNodoAVL( int pIdHotel, string pNombre, int pCategoria, string pCiudad, int pPrecioHabIndiv,
+            int pPrecioHabDoble, int pCantHabIndiv, int pCantHabDoble);
+    void PreordenI(nodo *k);
+    string InordenI();
+    void PostordenI();
+    
+    void InsertarBalanceado(nodo *ra, int _code, int _codLugar, string _name);
+
+    bool Hh;
+
+    void Equilibrar1(nodo *n, bool);
+    void Equilibrar2(nodo *n, bool);
+    void InsertaNodoAVL(int _code, int _codLugar, string _name);
+    void RotacionDobleIzquierda(nodo *n1, nodo *n2);
+    void RotacionDobleDerecha(nodo *n1, nodo *n2);
+    void RotacionSimpleIzquierda(nodo *n1, nodo *n2);
+    void RotacionSimpleDerecha(nodo *n1, nodo *n2);
+
+    //++++++++++++++++++Inserciones +++++++++++++++++++++++++++++++++++++++++
+
+    void InsertaNodoTransporte(nodo *n,int idHotel, int idTransporte, int tipoTransporte,string origen, string destino,string salida,string horaSalida ,string llegada,string horaLlegada,string compannia ,int  plazas,int precio,int cantT);
+    void InsertaNodoOferta(nodo *R,int idHotel, int  idOferta,int  precioInd,int precioDoble,int cantI,int  cantD);
+
+};
+
+
+void ArbolAVL::InsertaNodoAVL(int _code, int _codLugar, string _name)
+{
+    if(raiz==NULL){
+    	Supermercado * s = new Supermercado(_code, _codLugar, _name);
+        raiz = new nodo(s);
+    }else{
+        raiz->InsertaAVL(_code, _codLugar, _name);
+    }
+}
+
+void ArbolAVL::InsertarBalanceado(nodo *ra, int _code, int _codLugar, string _name){
+    nodo *n1;
+
+    if(raiz==NULL){
+    	Supermercado *sup = new Supermercado(_code, _codLugar, _name);
+        ra=new nodo(sup);
+        Hh = true;
+    }else{
+        cout<<endl;
+        if(_code<=ra->valorS->getCodigo()){
+            InsertarBalanceado(ra->Hizq,pIdHotel, pNombre, pCategoria, pCiudad, pPrecioHabIndiv,
+            pPrecioHabDoble, pCantHabIndiv, pCantHabDoble);
+
+        if(Hh){
+            switch(ra->obtenerValor()){
+                case 1: ra->FB=0;
+                Hh = false;
+                break;
+                case 0: ra->FB  = -1;
+                break;
+                case -1: n1=ra->Hizq;
+                if(n1->FB =-1){
+                    RotacionSimpleIzquierda(ra, n1);
+                }else{
+                    RotacionDobleIzquierda(ra,n1);
+                }
+                Hh = false;
+                break;
+            }
+        }
+        }else{
+            if(pIdHotel>ra->obtenerValor()){
+                InsertarBalanceado(ra->Hder, pIdHotel, pNombre, pCategoria, pCiudad, pPrecioHabIndiv,
+            pPrecioHabDoble, pCantHabIndiv, pCantHabDoble);
+
+                if(Hh){
+                    switch(ra->FB){
+                        case -1: ra->FB=0;
+                        Hh = false;
+                        break;
+                        case 0: ra->FB=1;
+                        break;
+                        case 1:n1=ra->Hder;
+                        if(n1->FB=1){
+                            RotacionSimpleDerecha(ra, n1);
+                        }else{
+                            RotacionDobleDerecha(ra, n1);
+                        }
+                        Hh=false;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void ArbolAVL::Equilibrar1(nodo* n, bool Hh){
+    nodo *n1;
+    switch (n->FB){
+        case -1: n->FB = 0;
+        break;
+        case 0: n->FB = 1;
+        Hh = false;
+        break;
+        case 1: n1 = n->Hder;
+        if(n1->FB>=0){
+            if(n1->FB=0){
+                Hh = false;
+                RotacionSimpleDerecha(n, n1);
+            }else{
+                RotacionDobleDerecha(n, n1);
+            }
+        }
+    }
+}
+
+void ArbolAVL::Equilibrar2(nodo* n, bool Hh){
+    nodo *n1;
+    switch (n->FB){
+        case 1: n->FB = 0;
+        break;
+        case 0: n->FB = 1;
+        Hh = false;
+        break;
+        case -1: n1 = n->Hizq;
+        if(n1->FB<=0){
+            if(n1->FB=0){
+                Hh = false;
+                RotacionSimpleIzquierda(n, n1);
+            }else{
+                RotacionDobleIzquierda(n, n1);
+            }
+        }
+    }
+}
+
+
+
+void ArbolAVL::RotacionDobleIzquierda(nodo* n, nodo* n1){
+    nodo *n2;
+    n2=n1->Hder;
+    n->Hizq = n2->Hder;
+    n2->Hder=n;
+    n1->Hder=n2->Hizq;
+    n2->Hizq=n1;
+
+    if(n2->FB==1){
+        n1->FB=-1;
+    }else{
+        n1->FB=0;
+    }
+    if(n2->FB==-1){
+        n->FB=1;
+    }else{
+        n->FB=0;
+    }
+    n2->FB=0;
+    n=n2;
+}
+
+void ArbolAVL::RotacionDobleDerecha(nodo* n, nodo* n1){
+    nodo *n2;
+    n2=n1->Hizq;
+    n->Hder = n2->Hizq;
+    n2->Hizq=n;
+    n1->Hizq=n2->Hder;
+    n2->Hder=n1;
+
+    if(n2->FB==1){
+        n->FB=-1;
+    }else{
+        n->FB=0;
+    }
+    if(n2->FB==-1){
+        n1->FB=1;
+    }else{
+        n1->FB=0;
+    }
+    n2->FB=0;
+    n=n2;
+}
+
+void ArbolAVL::RotacionSimpleDerecha(nodo* n, nodo* n1){
+    n->Hder=n1->Hizq;
+    n1->Hizq=n;
+
+    if(n1->FB==1){
+        n->FB=0;
+        n1->FB=0;
+    }else{
+        n->FB=1;
+        n1->FB=-1;
+    }
+    n=n1;
+}
+
+void ArbolAVL::RotacionSimpleIzquierda(nodo* n, nodo* n1){
+    n->Hizq=n1->Hder;
+    n1->Hder=n;
+
+    if(n1->FB==-1){
+        n->FB=0;
+        n1->FB=0;
+    }else{
+        n->FB=-1;
+        n1->FB=-1;
+    }
+    n=n1;
+}
+
+void ArbolAVL::PreordenI(nodo *R){
+    if(R==NULL){
+        return;
+    }else{
+        cout<<R->obtenerValor()<<endl;
+        PreordenI(R->Hizq);
+        PreordenI(R->Hder);
+    }
+}
+
+//++++++++++++++++++++ inserciones de archivo+++++++++++++++++++++++++++++
+void ArbolAVL :: InsertaNodoTransporte(nodo *H,int idHotel, int idTransporte, int tipoT,string origen, string destino,string salida,string horaSalida ,string Llegada,string horaLlegada,string compannia ,int  plazas,int precio,int cantT){
+    if (H==NULL){
+        return;
+    }
+    else{
+        if (H->obtenerValor()==idHotel){
+            if (H->siguiente==NULL){
+                H->siguiente=new RNegro();
+            }
+        H->siguiente->insertarValorNodoRN(idTransporte,tipoT,origen, destino, salida, horaSalida, Llegada, horaLlegada,compannia, plazas, precio,  cantT  );
+        return;
+
+        }
+
+        else{
+            InsertaNodoTransporte(H->Hizq,idHotel, idTransporte,tipoT,origen, destino, salida, horaSalida, Llegada, horaLlegada,compannia, plazas, precio,  cantT );
+            InsertaNodoTransporte(H->Hder,idHotel, idTransporte,tipoT,origen, destino, salida, horaSalida, Llegada, horaLlegada,compannia, plazas, precio,  cantT );
+        }
+    }
+}
+void ArbolAVL:: InsertaNodoOferta(nodo *H,int idHotel, int  idOferta,int  precioInd,int precioDoble,int cantI,int  cantD){
+    if (H==NULL){
+        return;
+    }
+    else{
+        if (H->obtenerValor()==idHotel){
+            if (H->anterior==NULL){
+                H->anterior=new AA();
+            }
+        H->anterior->lookup( idOferta,  precioInd,  precioDoble,  cantI,  cantD);
+            return;
+        }
+        else{
+            InsertaNodoOferta(H->Hizq, idHotel,  idOferta,  precioInd,  precioDoble,  cantI,  cantD);
+            InsertaNodoOferta(H->Hder, idHotel,  idOferta,  precioInd,  precioDoble,  cantI,  cantD);
+        }
+    }
+}
+/////////////////////FIN AVL//////////////////////////////////
 
 //////////////////ARBOL B//////////////////////
 class ArregloClaves
@@ -799,7 +1166,7 @@ public:
     void RecorridoInordenB(ApuntadorPagina Raiz);
     bool existeCliente(ApuntadorPagina Raiz,int _Numero);
 
-
+	bool LeerClientes();
     // Funcion que simplemente agrega un cliente usando IniciarInsercionB(para Numero se utiliza el mismo _id, son 2 _id
     // en total)
     void Clientes();
@@ -821,6 +1188,10 @@ void ArbolB::IniciarInsercionB(int Numero, int _id, string _nombre, string _dire
 {
     ApuntadorPagina Raiz = raizB;
     raizB = InsertarB(Raiz,Numero,  _id,  _nombre,  _direccion,  _telefono);
+    
+   // if (Raiz->Esta){
+    //	delete raizB;
+//	}
 }
 
 ApuntadorPagina ArbolB::InsertarB(ApuntadorPagina Raiz, int Numero, int _id, string _nombre, string _direccion, string _telefono)
@@ -828,6 +1199,10 @@ ApuntadorPagina ArbolB::InsertarB(ApuntadorPagina Raiz, int Numero, int _id, str
     ApuntadorPagina P = NULL;
 
     Raiz = EmpujarB(Raiz,Numero,  _id,  _nombre,  _direccion,  _telefono);
+    if	(Raiz->Esta){
+    	Raiz->Esta= false;
+    	return Raiz;
+	}
     if(Raiz->EmpujarArriba == true){
         P = new Pagina();
         P->cuenta = 1;
@@ -866,6 +1241,7 @@ ApuntadorPagina ArbolB::EmpujarB(ApuntadorPagina Raiz, int Numero, int _id, stri
         Raiz = BuscarNodoB(Raiz,Numero);
         if(Raiz->Esta){
             cout << "Elemento Repetido" << endl;
+            return Raiz;
         }
         if(Raiz->K == 0){
 
@@ -1095,6 +1471,211 @@ int PilaB::Size(){
 
 
 //////////////////FIN ARBOL B//////////////////////
+
+
+
+
+
+/////////////////ARBOL RN//////////////////////////
+enum Color {RED, BLACK};
+
+class ArbolRN{
+
+  public:
+
+  pnodo raiz;
+  ArbolRN():raiz(NULL){}
+
+  void insertarValorNodoRN(int _code, string _descripcion);
+  //void inordenRN(nodo*R);
+  void levelOrder();
+
+  void rotarIzquierda(nodo *&, nodo *&);
+  void rotarDerecha(nodo *&, nodo *&);
+  void aplicarReglas(nodo *&, nodo *&);
+  nodo* InsertarNodoRN(nodo* RaizRN, nodo *pt);
+  
+  void InordenRN(nodo *R);
+  bool LeerCategorias();
+
+ // void InordenRN(nodo *T);
+  int ConsultarTransporteAux2(nodo*H, int idT, int bandera, int x);
+
+};
+
+nodo* ArbolRN :: InsertarNodoRN(nodo* RaizRN, nodo *pt){
+    if (RaizRN == NULL)
+       return pt;
+
+    if (pt->valorC->getCodigo() < RaizRN->valorC->getCodigo()){
+        RaizRN->Hizq  = InsertarNodoRN(RaizRN->Hizq, pt);
+        RaizRN->Hizq->padre = RaizRN;
+    }
+    else if (pt->valorC->getCodigo() > RaizRN->valorC->getCodigo())
+    {
+        RaizRN->Hder = InsertarNodoRN(RaizRN->Hder, pt);
+        RaizRN->Hder->padre = RaizRN;
+    }
+
+    return RaizRN;
+}
+
+
+
+void ArbolRN :: rotarIzquierda(nodo *&RaizRN, nodo *&pt){
+    nodo *pt_der = pt->Hder;
+
+    pt->Hder = pt_der->Hizq;
+
+    if (pt->Hder != NULL)
+        pt->Hder->padre = pt;
+
+    pt_der->padre = pt->padre;
+
+    if (pt->padre == NULL)
+        RaizRN = pt_der;
+
+    else if (pt == pt->padre->Hizq) //////////////////////////////////////////////REVISAR
+        pt->padre->Hizq = pt_der;
+
+    else
+        pt->padre->Hder = pt_der;
+
+    pt_der->Hizq = pt;
+    pt->padre = pt_der;
+}
+
+void ArbolRN ::rotarDerecha(nodo *&RaizRN, nodo *&pt){
+    nodo *pt_izq = pt->Hizq;
+
+    pt->Hizq = pt_izq->Hder;
+
+    if (pt->Hizq != NULL)
+        pt->Hizq->padre = pt;
+
+    pt_izq->padre = pt->padre;
+
+    if (pt->padre == NULL)
+        RaizRN = pt_izq;
+
+    else if (pt == pt->padre->Hizq)
+        pt->padre->Hizq = pt_izq;
+
+    else
+        pt->padre->Hder = pt_izq;
+
+    pt_izq->Hder = pt;
+    pt->padre = pt_izq;
+}
+
+
+void ArbolRN ::aplicarReglas(nodo *&RaizRN, nodo *&pt){
+    nodo *padre_pt = NULL;
+    nodo *abuelo_pt = NULL;
+	if (pt->padre != NULL){
+	
+    while ((pt != RaizRN) && (pt->color != BLACK) &&
+           (pt->padre->color == RED))
+    {
+
+        padre_pt = pt->padre;
+        abuelo_pt = pt->padre->padre;
+
+        /*  Case : A
+            Parent of pt is left child of Grand-parent of pt */
+        if (padre_pt == abuelo_pt->Hizq){
+            nodo *tio_pt = abuelo_pt->Hder;
+
+            /* Case : 1
+               The uncle of pt is also red
+               Only Recoloring required */
+            if (tio_pt != NULL && tio_pt->color == RED){
+                abuelo_pt->color = RED;
+                padre_pt->color = BLACK;
+                tio_pt->color = BLACK;
+                pt = abuelo_pt;
+            }
+
+            else{
+                /* Case : 2
+                   pt is right child of its parent
+                   Left-rotation required */
+                if (pt == padre_pt->Hder)
+                {
+                    rotarIzquierda(RaizRN, padre_pt);
+                    pt = padre_pt;
+                    padre_pt = pt->padre;
+                }
+
+                /* Case : 3
+                   pt is left child of its parent
+                   Right-rotation required */
+                rotarDerecha(RaizRN, abuelo_pt);
+                swap(padre_pt->color, abuelo_pt->color);
+                pt = padre_pt;
+            }
+        }
+
+        /* Case : B
+           Parent of pt is right child of Grand-parent of pt */
+        else{
+            nodo *tio_pt = abuelo_pt->Hizq;
+
+            /*  Case : 1
+                The uncle of pt is also red
+                Only Recoloring required */
+            if ((tio_pt != NULL) && (tio_pt->color == RED)){
+                abuelo_pt->color = RED;
+                padre_pt->color = BLACK;
+                tio_pt->color = BLACK;
+                pt = abuelo_pt;
+            }
+            else{
+                /* Case : 2
+                   pt is left child of its parent
+                   Right-rotation required */
+                if (pt == padre_pt->Hizq){
+                    rotarDerecha(RaizRN, padre_pt);
+                    pt = padre_pt;
+                    padre_pt = pt->padre;
+                }
+
+                /* Case : 3
+                   pt is right child of its parent
+                   Left-rotation required */
+                rotarIzquierda(RaizRN, abuelo_pt);
+                swap(padre_pt->color, abuelo_pt->color);
+                pt = padre_pt;
+            }
+        }
+    }
+	}
+    RaizRN->color = BLACK;
+}
+
+void ArbolRN ::insertarValorNodoRN(int _code, string _descripcion){
+	Categoria * c = new Categoria(_code, _descripcion);
+	
+    nodo *pt = new nodo(c);
+
+    raiz = InsertarNodoRN(raiz, pt);
+
+    aplicarReglas(raiz, pt);
+
+}
+
+void ArbolRN::InordenRN(nodo *R){
+	
+	if(R==NULL){
+		return;
+	
+		}else{
+			InordenRN(R->Hizq);
+			cout<<R->valorC->getCodigo()<< "-";
+			InordenRN(R->Hder);
+		}
+	}
+//////////////FIN ARBOL RN////////////////////////
 
 class listaDC {
    public:
@@ -1552,7 +2133,7 @@ bool Binario:: LeerProveedores() { //Leer Proveedores
 					break;
 					
 					case 4: tel_p = l;
-					cout << tel_p << endl;
+					//cout << tel_p << endl;
 					break;
 					}
 				cont++;	
@@ -1616,20 +2197,20 @@ bool Binario:: LeerProveedores() { //Leer Proveedores
 	return false;
 }
 
-bool listaDC:: LeerCategorias() { //Leer Categorías
+bool ArbolRN:: LeerCategorias() { //Leer Categorías
 
 	string cod_c;
 	string des_c;
   	int cont = 1;
   	int int_cod;
 
-	std::ifstream is("Categorías.txt");     // open file
+	std::ifstream is("Categorias.txt");     // open file
 	
 	char c;
 	string l;
 	while (is.get(c))          // loop getting single characters
 		{
-		if (cont <= 2 )
+		if (cont <= 3 )
 			{
 				
 			if (c != ';')
@@ -1650,10 +2231,13 @@ bool listaDC:: LeerCategorias() { //Leer Categorías
 				{
 				switch (cont)
 					{
-					case 1: cod_c = l;
+				//	case 1:	cout<<"JEJE"<<endl;
+					break; 
+					
+					case 2: cod_c = l;
 					break;
 					
-					case 2: des_c = l;
+					case 3: des_c = l;
 					break;
 					}
 				cont++;	
@@ -1665,10 +2249,12 @@ bool listaDC:: LeerCategorias() { //Leer Categorías
 			if (VerificarEntero(cod_c))
 				{
 				int_cod = RetornarEntero(cod_c);
-					
-				Categoria * o = new Categoria(int_cod, des_c);
-	
-				InsertarInicio(o);
+				
+				
+				insertarValorNodoRN(int_cod, des_c);	
+			//	Categoria * o = new Categoria(int_cod, des_c);
+				
+			//	InsertarInicio(o);
 				
 				
 				l = c;
@@ -1693,9 +2279,9 @@ bool listaDC:: LeerCategorias() { //Leer Categorías
   	if (VerificarEntero(cod_c))
 	  	{
 		int_cod = RetornarEntero(cod_c);
-		
-		Categoria * o = new Categoria(int_cod, des_c);	
-		InsertarInicio(o);
+		insertarValorNodoRN(int_cod, des_c);
+		//Categoria * o = new Categoria(int_cod, des_c);	
+		//InsertarInicio(o);
 		return true;
 		}
 	cout<<"*********Error en las categorias*********"<<endl;
@@ -1809,7 +2395,7 @@ bool listaDC:: LeerProductos() { //Leer Productos
 }
 
 
-bool listaDC:: LeerClientes() { //Leer Clientes
+bool ArbolB:: LeerClientes() { //Leer Clientes
 
 	string CedulaCliente;
 	string NombreCliente;
@@ -1865,11 +2451,12 @@ bool listaDC:: LeerClientes() { //Leer Clientes
 			if (VerificarEntero(CedulaCliente) && VerificarEntero(TelefonoCliente))
 				{
 				int_ced = RetornarEntero(CedulaCliente);
-				int_tel = RetornarEntero(TelefonoCliente);
+			//	int_tel = RetornarEntero(TelefonoCliente);
 			
-				Cliente * o = new Cliente(int_ced, NombreCliente, DireccionCliente, int_tel); 
-	
-				InsertarInicio(o);
+				//Cliente * o = new Cliente(int_ced, NombreCliente, DireccionCliente, int_tel); 
+				///ArbolB B;
+				IniciarInsercionB(int_ced,int_ced,NombreCliente,DireccionCliente, TelefonoCliente);
+				//InsertarInicio(o);
 				
 				
 				l = c;
@@ -1894,9 +2481,9 @@ bool listaDC:: LeerClientes() { //Leer Clientes
 		{
 		int_ced = RetornarEntero(CedulaCliente);
 		int_tel = RetornarEntero(TelefonoCliente);
-		Cliente * o = new Cliente(int_ced, NombreCliente, DireccionCliente, int_tel); 
-
-		InsertarInicio(o);
+		//Cliente * o = new Cliente(int_ced, NombreCliente, DireccionCliente, int_tel); 
+		IniciarInsercionB(int_ced,int_ced,NombreCliente,DireccionCliente, TelefonoCliente);
+		//InsertarInicio(o);
 		return true;
 		}
 	cout<<"*********Error en el archivo de clientes*********"<<endl;
@@ -2572,13 +3159,33 @@ int main()
 	ListaProveedores.PreordenR(r);
 	
 	ArbolB B;
-	B.IniciarInsercionB(88,88,"Roberto","Heredia", "86582179");
+	
+	B.LeerClientes();
+	//B.IniciarInsercionB(89,89,"Roberto","Heredia", "86582179");
+	
+	//B.RecorridoInordenB(a);
+	
+	
+	
+//	B.IniciarInsercionB(105,105,"Juan","Heredia", "86582179");
+//	B.IniciarInsercionB(100,100,"Daniel","Paraiso", "86582179");
+//	B.IniciarInsercionB(101,101,"Sergio","Alajuela", "86582232");
+	
 	ApuntadorPagina a = B.raizB;
+//	cout<<"HOLA:"<<endl;
 	B.RecorridoInordenB(a);
 	
-	B.IniciarInsercionB(89,89,"Roberto","Heredia", "86582179");
-	B.RecorridoInordenB(a);
 	
+	
+	ArbolRN RN;
+	RN.LeerCategorias();
+	/*
+	RN.insertarValorNodoRN(45, "Verduras");
+	RN.insertarValorNodoRN(44, "Joyas");
+	RN.insertarValorNodoRN(38, "Arroz");
+	nodo * cat = RN.raiz;
+	*/
+	RN.InordenRN(RN.raiz);
 	
 	
 	/*

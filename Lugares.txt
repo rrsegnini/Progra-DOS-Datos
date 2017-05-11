@@ -1,0 +1,81 @@
+78;San Jose
+25;Curridabat
+12;Moravia
+46;Perez Zeledon
+52;Santa Bárbara
+10;Belén
+08;San Isidro
+25;Tejar
+32;Paraíso
+12;Atenas
+13;Palmares
+69;Orotina
+17;Liberia
+98;Nicoya
+79;Santa Cruz
+43;Guápiles
+21;Aserrí
+65;Tibás
+43;Santa Ana
+29;Coronado
+33;Esparza
+67;Quepos
+84;Coto Brus
+66;Goicochea
+99;Alajuelita
+101;Escazú
+79;Desamparados
+80;Acosta
+69;Dota
+65;Montes de Oca
+17;Liberia
+98;Nicoya
+79;Santa Cruz
+43;Guápiles
+21;Aserrí
+65;Tibás
+43;Santa Ana
+29;Coronado
+33;Esparza
+69;Orotina
+17;Liberia
+98;Nicoya
+79;Santa Cruz
+43;Guápiles
+21;Aserrí
+12;Atenas
+13;Palmares
+69;Orotina
+17;Liberia
+152;Nicoya
+500;Santa Cruz
+302;Guápiles
+210;Aserrí
+650;Tibás
+435;Santa Ana
+294;Coronado
+337;Esparza
+679;Quepos
+846;Coto Brus
+663;Goicochea
+994;Alajuelita
+1041;Escazú
+793;Desamparados
+806;Acosta
+698;Dota
+654;Montes de Oca
+174;Liberia
+982;Nicoya
+791;Santa Cruz
+438;Guápiles
+219;Aserrí
+657;Tibás
+437;Santa Ana
+298;Coronado
+336;Esparza
+695;Orotina
+175;Liberia
+985;Nicoya
+797;Santa Cruz
+433;Guápiles
+213;Aserrí

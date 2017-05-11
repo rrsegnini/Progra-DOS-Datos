@@ -1,0 +1,45 @@
+10;25;Megasuper
+15;12;Walmart
+20;46;Pali
+25;52;Perimercados
+35;10;Super Naty
+33;08;Super Padre Pio
+45;25;Supermecado Saretto
+78;32;Mayca autoservicio
+65;12;Super Mas y mas
+66;13;Super Mora
+98;69;Megasuper
+74;17;Walmart
+51;98;Walmart
+44;79;Megasuper
+31;43;Pali
+24;21;Pali
+28;65;Perimercados
+21;43;Perimercados
+05;29;Super Naty
+07;33;Super Mora
+08;67;Super Mas y Mas
+25;84;Mayca autoservicio
+110;66;Supermercado Saretto
+112;99;Super Padre Pio
+456;101;Super Padre Pio
+228;79;Super Padre Pio
+335;80;Supermercado Saretto
+479;69;Supermercado Saretto
+321;17;Supermercado Saretto
+156;98;Super Mora
+987;43;Super Mora
+357;500;Super Mora
+418;294;Mayca autoservicio
+145;302;Mayca autoservicio
+1568;650;Perimercados
+1489;435;Perimercados
+290;12;Super Mas y Mas
+369;13;Super Mas y Mas
+478;21;Walmart
+678;79;Walmart
+46;65;Walmart
+12;43;Megasuper
+16;985;Megasuper
+17;433;Pali
+30;213;Pali
