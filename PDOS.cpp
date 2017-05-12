@@ -582,7 +582,9 @@ void Binario::InsertaNodo(Proveedor* o)
 class nodo {
 	typedef nodo *pnodo;
    public:
-   	
+   		nodo(){
+   			FB=0;
+		   }
    		//Constructor int
 	    nodo(int v)
 	    {
@@ -610,15 +612,17 @@ class nodo {
 	    	
 	    	Hizq = NULL;
 			Hder = NULL;
+			
+			FB=0;
 			//padre=NULL;
 	    	}
-		
+		/*
 	   nodo(Supermercado* v, nodo * signodo)
 	    {
 	    	
 	       valorS = v;
 	       siguiente = signodo;
-	    }
+	    }*/
 		//Fin Constructor Supermercado
 		
 		
@@ -730,6 +734,8 @@ class nodo {
 	
 	nodo *padre;
 	bool color;
+	
+	int FB;
     
     
     
@@ -746,7 +752,7 @@ class nodo {
 typedef nodo *pnodo;
 
 
-
+/*
 void nodo::InsertaAVL(int _code, int _codLugar, string _name)
 {
     if(valorS->getCodigo()<valor){
@@ -764,7 +770,7 @@ void nodo::InsertaAVL(int _code, int _codLugar, string _name)
             Hder->InsertaAVL(_code, _codLugar, _name);
         }
     }
-}
+}*/
 
 ///////////////////////////AVL/////////////////////////////////
 
@@ -772,66 +778,72 @@ class ArbolAVL{
   public:
     nodo *raiz;
 
-    ArbolAVL():raiz(NULL){}
-
-    void InsertaNodoAVL( int pIdHotel, string pNombre, int pCategoria, string pCiudad, int pPrecioHabIndiv,
-            int pPrecioHabDoble, int pCantHabIndiv, int pCantHabDoble);
-    void PreordenI(nodo *k);
-    string InordenI();
-    void PostordenI();
+    //ArbolAVL():raiz(NULL){}
     
-    void InsertarBalanceado(nodo *ra, int _code, int _codLugar, string _name);
+    ArbolAVL(){raiz=NULL;}
+	
+
+    void PreordenI(nodo *k);
+    
+    
+    void InsertarBalanceado(nodo *&ra, int _code, int _codLugar, string _name);
 
     bool Hh;
 
-    void Equilibrar1(nodo *n, bool);
-    void Equilibrar2(nodo *n, bool);
+    void Equilibrar1(nodo *&n, bool);
+    void Equilibrar2(nodo *&n, bool);
     void InsertaNodoAVL(int _code, int _codLugar, string _name);
-    void RotacionDobleIzquierda(nodo *n1, nodo *n2);
-    void RotacionDobleDerecha(nodo *n1, nodo *n2);
-    void RotacionSimpleIzquierda(nodo *n1, nodo *n2);
-    void RotacionSimpleDerecha(nodo *n1, nodo *n2);
+    void RotacionDobleIzquierda(nodo *&n1, nodo *&n2);
+    void RotacionDobleDerecha(nodo *&n1, nodo *&n2);
+    void RotacionSimpleIzquierda(nodo *&n1, nodo *&n2);
+    void RotacionSimpleDerecha(nodo *&n1, nodo *&n2);
+    
+    bool LeerSupermercados();
 
     //++++++++++++++++++Inserciones +++++++++++++++++++++++++++++++++++++++++
 
-    void InsertaNodoTransporte(nodo *n,int idHotel, int idTransporte, int tipoTransporte,string origen, string destino,string salida,string horaSalida ,string llegada,string horaLlegada,string compannia ,int  plazas,int precio,int cantT);
-    void InsertaNodoOferta(nodo *R,int idHotel, int  idOferta,int  precioInd,int precioDoble,int cantI,int  cantD);
+   // void InsertaNodoTransporte(nodo *n,int idHotel, int idTransporte, int tipoTransporte,string origen, string destino,string salida,string horaSalida ,string llegada,string horaLlegada,string compannia ,int  plazas,int precio,int cantT);
+    //void InsertaNodoOferta(nodo *R,int idHotel, int  idOferta,int  precioInd,int precioDoble,int cantI,int  cantD);
 
 };
 
 
 void ArbolAVL::InsertaNodoAVL(int _code, int _codLugar, string _name)
 {
+	//Hh = false;
     if(raiz==NULL){
     	Supermercado * s = new Supermercado(_code, _codLugar, _name);
         raiz = new nodo(s);
+        raiz;
     }else{
-        raiz->InsertaAVL(_code, _codLugar, _name);
+        //raiz->InsertaAVL(_code, _codLugar, _name);
+       // Supermercado * s = new Supermercado(_code, _codLugar, _name);
+        //nodo *sn = raiz;
+        InsertarBalanceado(raiz, _code, _codLugar, _name);
     }
 }
 
-void ArbolAVL::InsertarBalanceado(nodo *ra, int _code, int _codLugar, string _name){
+void ArbolAVL::InsertarBalanceado(nodo *&ra, int _code, int _codLugar, string _name){
     nodo *n1;
 
-    if(raiz==NULL){
+    if(ra==NULL){
     	Supermercado *sup = new Supermercado(_code, _codLugar, _name);
         ra=new nodo(sup);
         Hh = true;
     }else{
-        cout<<endl;
-        if(_code<=ra->valorS->getCodigo()){
-            InsertarBalanceado(ra->Hizq,pIdHotel, pNombre, pCategoria, pCiudad, pPrecioHabIndiv,
-            pPrecioHabDoble, pCantHabIndiv, pCantHabDoble);
+       // cout<<endl;
+        if(_code<ra->valorS->getCodigo()){
+            InsertarBalanceado(ra->Hizq,_code, _codLugar, _name);
 
         if(Hh){
-            switch(ra->obtenerValor()){
+            switch(ra->FB){
                 case 1: ra->FB=0;
                 Hh = false;
                 break;
                 case 0: ra->FB  = -1;
                 break;
                 case -1: n1=ra->Hizq;
-                if(n1->FB =-1){
+                if(n1->FB ==-1){
                     RotacionSimpleIzquierda(ra, n1);
                 }else{
                     RotacionDobleIzquierda(ra,n1);
@@ -841,9 +853,8 @@ void ArbolAVL::InsertarBalanceado(nodo *ra, int _code, int _codLugar, string _na
             }
         }
         }else{
-            if(pIdHotel>ra->obtenerValor()){
-                InsertarBalanceado(ra->Hder, pIdHotel, pNombre, pCategoria, pCiudad, pPrecioHabIndiv,
-            pPrecioHabDoble, pCantHabIndiv, pCantHabDoble);
+            if(_code > ra->valorS->getCodigo()){
+                InsertarBalanceado(ra->Hder,_code, _codLugar, _name);
 
                 if(Hh){
                     switch(ra->FB){
@@ -853,7 +864,7 @@ void ArbolAVL::InsertarBalanceado(nodo *ra, int _code, int _codLugar, string _na
                         case 0: ra->FB=1;
                         break;
                         case 1:n1=ra->Hder;
-                        if(n1->FB=1){
+                        if(n1->FB==1){
                             RotacionSimpleDerecha(ra, n1);
                         }else{
                             RotacionDobleDerecha(ra, n1);
@@ -867,7 +878,7 @@ void ArbolAVL::InsertarBalanceado(nodo *ra, int _code, int _codLugar, string _na
     }
 }
 
-void ArbolAVL::Equilibrar1(nodo* n, bool Hh){
+void ArbolAVL::Equilibrar1(nodo*& n, bool Hh){
     nodo *n1;
     switch (n->FB){
         case -1: n->FB = 0;
@@ -887,7 +898,7 @@ void ArbolAVL::Equilibrar1(nodo* n, bool Hh){
     }
 }
 
-void ArbolAVL::Equilibrar2(nodo* n, bool Hh){
+void ArbolAVL::Equilibrar2(nodo*& n, bool Hh){
     nodo *n1;
     switch (n->FB){
         case 1: n->FB = 0;
@@ -909,7 +920,7 @@ void ArbolAVL::Equilibrar2(nodo* n, bool Hh){
 
 
 
-void ArbolAVL::RotacionDobleIzquierda(nodo* n, nodo* n1){
+void ArbolAVL::RotacionDobleIzquierda(nodo*& n, nodo*& n1){
     nodo *n2;
     n2=n1->Hder;
     n->Hizq = n2->Hder;
@@ -931,7 +942,7 @@ void ArbolAVL::RotacionDobleIzquierda(nodo* n, nodo* n1){
     n=n2;
 }
 
-void ArbolAVL::RotacionDobleDerecha(nodo* n, nodo* n1){
+void ArbolAVL::RotacionDobleDerecha(nodo*& n, nodo*& n1){
     nodo *n2;
     n2=n1->Hizq;
     n->Hder = n2->Hizq;
@@ -953,7 +964,7 @@ void ArbolAVL::RotacionDobleDerecha(nodo* n, nodo* n1){
     n=n2;
 }
 
-void ArbolAVL::RotacionSimpleDerecha(nodo* n, nodo* n1){
+void ArbolAVL::RotacionSimpleDerecha(nodo*& n, nodo*& n1){
     n->Hder=n1->Hizq;
     n1->Hizq=n;
 
@@ -967,7 +978,7 @@ void ArbolAVL::RotacionSimpleDerecha(nodo* n, nodo* n1){
     n=n1;
 }
 
-void ArbolAVL::RotacionSimpleIzquierda(nodo* n, nodo* n1){
+void ArbolAVL::RotacionSimpleIzquierda(nodo*& n, nodo*& n1){
     n->Hizq=n1->Hder;
     n1->Hder=n;
 
@@ -985,12 +996,12 @@ void ArbolAVL::PreordenI(nodo *R){
     if(R==NULL){
         return;
     }else{
-        cout<<R->obtenerValor()<<endl;
+        cout<<R->valorS->getNombre()<<endl;
         PreordenI(R->Hizq);
         PreordenI(R->Hder);
     }
 }
-
+/*
 //++++++++++++++++++++ inserciones de archivo+++++++++++++++++++++++++++++
 void ArbolAVL :: InsertaNodoTransporte(nodo *H,int idHotel, int idTransporte, int tipoT,string origen, string destino,string salida,string horaSalida ,string Llegada,string horaLlegada,string compannia ,int  plazas,int precio,int cantT){
     if (H==NULL){
@@ -1030,6 +1041,7 @@ void ArbolAVL:: InsertaNodoOferta(nodo *H,int idHotel, int  idOferta,int  precio
         }
     }
 }
+*/
 /////////////////////FIN AVL//////////////////////////////////
 
 //////////////////ARBOL B//////////////////////
@@ -2197,6 +2209,98 @@ bool Binario:: LeerProveedores() { //Leer Proveedores
 	return false;
 }
 
+bool ArbolAVL:: LeerSupermercados() { //Leer Supermercados
+
+	string cod_s;
+	string nombre_s;
+	string codLugar;
+  	int cont = 1;
+  	int int_cod_s;
+	int int_codLugar;
+
+
+	std::ifstream is("Supermercados.txt");     // open file
+	
+	char c;
+	string l;
+	while (is.get(c))          // loop getting single characters
+		{
+		if (cont <= 3 )
+			{
+				
+			if (c != ';')
+		    	{
+		    	if (c == '\n')
+		    		{
+		    		nombre_s = l;
+		    		cont++;	
+					l = "";
+					
+					}
+				else
+					{
+					l = l + c;
+					}
+				}
+			else
+				{
+				switch (cont)
+					{
+					case 1: cod_s = l;
+					break; 
+					
+					case 2: codLugar = l;
+					break;
+					
+					case 3: nombre_s = l;
+					break;
+					}
+				cont++;	
+				l = "";
+				}
+			}
+		else
+			{
+			if (VerificarEntero(cod_s))
+				{
+				int_cod_s = RetornarEntero(cod_s);
+				int_codLugar = RetornarEntero(codLugar);
+				
+				InsertaNodoAVL(int_cod_s, int_codLugar, nombre_s);
+				
+				
+				
+				l = c;
+				
+				cod_s = "";
+	  			codLugar = "";
+				nombre_s = "";
+	  			
+	  			cont = 1;
+	  			}
+	  		else{
+	  			cout<<"*********Error en las categorias*********"<<endl;
+	  			return false;
+			  	}
+			}
+		
+		}
+
+  	is.close();                // close file
+  	nombre_s = l;
+  	
+  	if (VerificarEntero(cod_s))
+	  	{
+		int_cod_s = RetornarEntero(cod_s);
+		int_codLugar = RetornarEntero(codLugar);
+				
+		InsertaNodoAVL(int_cod_s, int_codLugar, nombre_s);
+		return true;
+		}
+	cout<<"*********Error en las categorias*********"<<endl;
+	return false;
+}
+
 bool ArbolRN:: LeerCategorias() { //Leer Categorías
 
 	string cod_c;
@@ -2287,7 +2391,6 @@ bool ArbolRN:: LeerCategorias() { //Leer Categorías
 	cout<<"*********Error en las categorias*********"<<endl;
 	return false;
 }
-
 
 
 bool listaDC:: LeerProductos() { //Leer Productos
@@ -3187,6 +3290,22 @@ int main()
 	*/
 	RN.InordenRN(RN.raiz);
 	
+	
+	ArbolAVL AVL;
+	/*
+	AVL.InsertaNodoAVL(87, 89, "MaxiPali");
+	AVL.InsertaNodoAVL(85, 89, "Palí");
+	AVL.InsertaNodoAVL(89, 89, "HiperMáx");
+	AVL.InsertaNodoAVL(98, 89, "Fresnos");
+	AVL.InsertaNodoAVL(77, 89, "MasXMenos");
+	AVL.InsertaNodoAVL(72, 89, "AA");
+	AVL.InsertaNodoAVL(12, 89, "Menos");
+	AVL.InsertaNodoAVL(37, 89, "AutoMercado");
+	*/
+	
+	AVL.LeerSupermercados();
+	
+	AVL.PreordenI(AVL.raiz);
 	
 	/*
 	if (ListaProveedores.LeerProveedores() && ListaClientes.LeerClientes() && ListaCategorias.LeerCategorias() && ListaProductos.LeerProductos())
