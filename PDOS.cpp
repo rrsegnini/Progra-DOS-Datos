@@ -363,7 +363,7 @@ class Cliente{
 		
 };
 
-
+class ArbolRN;
 class Supermercado{
 	
 	public:
@@ -401,6 +401,9 @@ class Supermercado{
 		int Codigo;
 		string Nombre;
 		int codigoLugar;
+		ArbolRN	* arbol;
+		
+	friend class ArbolAVL;
 	
 	
 		
@@ -714,7 +717,7 @@ class nodo {
 	    }
 		//Fin Constructor Cliente
 		
-		void InsertaAVL(int _code, int _codLugar, string _name);
+	
 		
 		
  private:
@@ -752,25 +755,6 @@ class nodo {
 typedef nodo *pnodo;
 
 
-/*
-void nodo::InsertaAVL(int _code, int _codLugar, string _name)
-{
-    if(valorS->getCodigo()<valor){
-        if(Hizq==NULL){
-        	Supermercado * ss = new Supermercado(_code, _codLugar, _name);
-            Hizq = new nodo(ss);
-        }else{
-            Hizq->InsertaAVL(_code, _codLugar, _name);
-        }
-    }if(valorS->getCodigo()>valor){
-        if(Hder==NULL){
-        	Supermercado * sss = new Supermercado(_code, _codLugar, _name);
-            Hder = new nodo(sss);
-        }else{
-            Hder->InsertaAVL(_code, _codLugar, _name);
-        }
-    }
-}*/
 
 ///////////////////////////AVL/////////////////////////////////
 
@@ -784,8 +768,7 @@ class ArbolAVL{
 	
 
     void PreordenI(nodo *k);
-    
-    
+    ArbolRN * BuscarSupermercado(nodo *&ra, int _codeSuper);    
     void InsertarBalanceado(nodo *&ra, int _code, int _codLugar, string _name);
 
     bool Hh;
@@ -1042,6 +1025,36 @@ void ArbolAVL:: InsertaNodoOferta(nodo *H,int idHotel, int  idOferta,int  precio
     }
 }
 */
+
+
+ArbolRN* ArbolAVL::BuscarSupermercado(nodo *&ra, int _codeSuper){
+   // nodo *n1;
+
+    if(ra==NULL){
+    	cout<<"No existe"<<endl;
+    	return NULL;
+    }else{
+       
+        if(_codeSuper==ra->valorS->getCodigo()){
+        	cout<<"Ahi esta"<<endl;
+        	return ra->valorS->arbol;
+        }
+
+		if (_codeSuper<ra->valorS->getCodigo()){
+			BuscarSupermercado(ra->Hizq, _codeSuper);
+			
+		
+        }else{
+            if(_codeSuper > ra->valorS->getCodigo()){
+                BuscarSupermercado(ra->Hder,_codeSuper);
+               }
+         }
+   }
+}
+    
+
+
+
 /////////////////////FIN AVL//////////////////////////////////
 
 //////////////////ARBOL B//////////////////////
@@ -3292,9 +3305,9 @@ int main()
 	
 	
 	ArbolAVL AVL;
-	/*
+	
 	AVL.InsertaNodoAVL(87, 89, "MaxiPali");
-	AVL.InsertaNodoAVL(85, 89, "Palí");
+/*	AVL.InsertaNodoAVL(85, 89, "Palí");
 	AVL.InsertaNodoAVL(89, 89, "HiperMáx");
 	AVL.InsertaNodoAVL(98, 89, "Fresnos");
 	AVL.InsertaNodoAVL(77, 89, "MasXMenos");
@@ -3303,9 +3316,17 @@ int main()
 	AVL.InsertaNodoAVL(37, 89, "AutoMercado");
 	*/
 	
-	AVL.LeerSupermercados();
+//	AVL.LeerSupermercados();
 	
 	AVL.PreordenI(AVL.raiz);
+	
+	ArbolRN * erreene = AVL.BuscarSupermercado(AVL.raiz, 89);
+	
+	erreene->raiz;
+	
+	
+
+	
 	
 	/*
 	if (ListaProveedores.LeerProveedores() && ListaClientes.LeerClientes() && ListaCategorias.LeerCategorias() && ListaProductos.LeerProductos())
