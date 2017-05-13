@@ -1195,8 +1195,25 @@ public:
     // Funcion que simplemente agrega un cliente usando IniciarInsercionB(para Numero se utiliza el mismo _id, son 2 _id
     // en total)
     void Clientes();
+    
+    void Eliminar (int C1, ApuntadorPagina & Raiz);
+    
+    void EliminarRegistro(int C1, ApuntadorPagina  Raiz, bool Encontrado);
+    
+    void Quitar(ApuntadorPagina  P, int K);
+    
+    void Sucesor (ApuntadorPagina P, int K);
+    
+    void BuscarNodo(int Clave, ApuntadorPagina P, bool Encontrado, int K);
 
-
+	void Restablecer (ApuntadorPagina P, int K);
+	
+	void MoverDerecha(ApuntadorPagina P, int K);
+	
+	void Combina(ApuntadorPagina P, int K);
+	
+	void MoverIzquierda (ApuntadorPagina P, int K);
+	
     //private:
 
     ApuntadorPagina raizB;
@@ -1494,6 +1511,275 @@ int PilaB::Size(){
 }
 
 
+void ArbolB::BuscarNodo(int Clave, ApuntadorPagina P, bool Encontrado, int K)
+{
+// Este método examina la pagina referenciada por P. De no //encontrarse el valor nuevo, K será el índice de la rama por //donde bajar
+
+{
+if (Clave < P->Claves->ObtenerApuntadorClave(K)->valorCl->getCedula())   // recuerde que los arreglos aquí inician en 1
+  {
+     Encontrado=false;
+     K=0; //rama por donde descender
+  }
+else
+  {
+    //Examina claves de la pagina
+     K=P->cuenta; // Numero de claves de la Pagina
+while(Clave<P->Claves->ObtenerApuntadorClave(K)->valorCl->getCedula() and (K>1))
+	{
+		K=K-1;
+	}
+	
+	if (Clave=P->Claves->ObtenerApuntadorClave(K)->valorCl->getCedula()){
+		Encontrado=true;
+	}
+    
+   }
+}
+}
+
+
+//Tiene como funcion devolver la nueva raiz si la raiz inicial se ha quedado sin claves
+void ArbolB::Eliminar (int C1, ApuntadorPagina & Raiz){
+
+    bool Encontrado;
+    ApuntadorPagina P;
+{
+   EliminarRegistro(C1,Raiz,Encontrado);
+   if (!Encontrado){
+   		cout<< "El elemento no se encuentra en el árbol"<<endl;
+   }
+      
+   else{
+   
+      if (Raiz->cuenta == 0) // la raíz ha quedado vacia
+      {
+        P= Raiz;
+        Raiz= Raiz->Ramas->ObtenerRama(0);
+        delete(P);
+      }
+  }
+}
+}
+
+
+
+//Este metodo controla el proceso de borrado de una clave
+//Primero busca en el nodo donde se encuentra la clave a eliminar
+//Si es una hoja, llama a elimina
+// Si no es hoja, se busca el sucesor inmediato, se coloca en el elemento a eliminar
+//Luego se suprime el sucesor  en la hoja
+void ArbolB::EliminarRegistro(int C1, ApuntadorPagina  Raiz, bool Encontrado)
+{
+     int K;
+     
+     if (Raiz==NULL)
+        Encontrado= false; // se ha llegado debajo de una hoja, la clave no esta en el arbol
+     else
+     {
+       //with Raiz
+       {
+         BuscarNodo(C1,Raiz,Encontrado,K);
+         if (Encontrado)
+         {
+           if (Raiz->Ramas->ObtenerRama(K-1))//Las ramas estan indexadas desde 0 a Max, por lo que este nodo es hoja
+              {
+			  Quitar(Raiz,K);
+          	}
+           else //No es hoja
+           {
+              Sucesor(Raiz,K); //reemplaza  Claves[K] por su sucesor
+              EliminarRegistro(Raiz->Claves->ObtenerApuntadorClave(K)->valorCl->getCedula(), Raiz->Ramas->ObtenerRama(K),Encontrado);  //Elimina la clave sucesora en su nodo
+              if (!Encontrado) //inconsistencia debe esta en el nodo
+                {cout << "Error en el proceso"<<endl;}
+           }
+         }  
+         else // No ha sido localizada la clave
+         {
+            EliminarRegistro (C1,Raiz->Ramas->ObtenerRama(K),Encontrado);
+            // Las llamadas recursivas retornan el control a este punto,  
+            // se comprueba que el nodo hijo mantenga un numero
+            // claves igual o mayor que el minimo necesario
+            if (Raiz->Ramas->ObtenerRama(K) !=NULL){
+			
+              if (Raiz->Ramas->ObtenerRama(K)->cuenta<5){
+			 
+                 Restablecer(Raiz,K);
+                  }
+                }
+         }         
+ }
+}
+}
+
+
+
+//recibe la direccion del nodo y la posicion de la clave a eliminar.
+//Elimina la clave junto con la rama que le corresponde
+void ArbolB::Quitar(ApuntadorPagina  P, int K)
+{
+  int J; //entero
+   //With P
+   
+   {
+    for (J= K+1;J <= P->cuenta; J++)
+    {
+    	nodo* temp = P->Claves->ObtenerApuntadorClave(J);
+    	nodo* temp2 = P->Claves->ObtenerApuntadorClave(J-1);
+        temp2 = temp;   //Desplaza una posicion a la izquierda, con ello elimina la clave
+       //delete (temp);
+       
+       ApuntadorPagina temp3 = P->Ramas->ObtenerRama(J);
+       ApuntadorPagina temp4 = P->Ramas->ObtenerRama(J-1);
+       temp4 = temp3;
+    }
+    P->cuenta=(P->cuenta)-1;
+}
+
+}
+
+
+//Busca la clave inmediatamente sucesor de la clave k y reemplaza la clave K
+void ArbolB::Sucesor(ApuntadorPagina P, int K)
+{
+  ApuntadorPagina Q;
+  
+  Q = P->Ramas->ObtenerRama(K);
+  
+  while (Q->Ramas->ObtenerRama(0) != NULL){
+     Q = Q->Ramas->ObtenerRama(0);
+	 }
+	 
+  P->Claves[K] = Q->Claves[1];
+}
+
+
+
+//Este realiza las acciones mas complejas del proceso. Restaura el nodo P.Ramas[K]
+//el cual ha quedado con un numero menor de claves, menos que el minimo
+void ArbolB::Restablecer (ApuntadorPagina P, int K)
+{
+  if (K>0)   //Tiene hermano izquierdo
+  {
+       if (P->Ramas->ObtenerRama(K-1)->cuenta > 5) //Tiene mas claves que el minimo y por tanto puede desplazarse una clave
+           {
+		    MoverDerecha(P,K);
+		}
+       else
+       	{
+           Combina(P,K);
+       }
+  }
+  else
+   {//solo tiene hermano derecho
+      if (P->Ramas->ObtenerRama(1)->cuenta > 5)
+      {
+        //Tiene mas claves que el minimo
+        MoverIzquierda(P,1);
+    }
+      else{
+        Combina(P,1);
+    }
+   }
+} 
+
+
+
+
+//Mueve una clave del nodo antecedente(P) al nodo que se esta restaurando
+//Asciende la clave mayor del hermano izquierdo al nodo antecedente
+ void ArbolB::MoverDerecha(ApuntadorPagina P, int K)
+ //En este metodo se deja hueco en el nodo P.Ramas[K] que es el nodo que tiene menos claves que elminimo 
+ //necesario, inserta la clave k del nodo antecedente y a su vez asciende la clave mayor ( la mas a la derecha) 
+ //del hermano izquierdo
+{
+  int J;
+   //with P.Ramas[K]
+   {
+      for (J= P->Ramas->ObtenerRama(K)->cuenta; J>=1; J--) 
+      {
+        P->Ramas->ObtenerRama(K)->Claves[J+1]= P->Ramas->ObtenerRama(K)->Claves[J];
+        P->Ramas->ObtenerRama(K)->Ramas[J+1]=P->Ramas->ObtenerRama(K)->Ramas[J];
+      }
+     P->Ramas->ObtenerRama(K)->cuenta=J= P->Ramas->ObtenerRama(K)->cuenta+1;
+     P->Ramas->ObtenerRama(K)->Ramas[1] = P->Ramas->ObtenerRama(K)->Ramas[0];
+     P->Ramas->ObtenerRama(K)->Claves[1] = P->Claves[K]; // baja la clave del nodo padre
+   }
+   //Ahora sube la clave desde el hermano izquierdo al nodo padre, para reemplazar la que bajo
+   //with P.Ramas[K-1] // hermano izquierdo
+   {
+     P->Claves[K]=P->Ramas->ObtenerRama(K-1)->Claves[P->Ramas->ObtenerRama(K-1)->cuenta];
+     P->Ramas->ObtenerRama(K)->Ramas[0] = P->Ramas->ObtenerRama(K-1)->Ramas[P->Ramas->ObtenerRama(K-1)->cuenta];
+     P->Ramas->ObtenerRama(K-1)->cuenta = P->Ramas->ObtenerRama(K-1)->cuenta-1;
+   }
+}
+
+
+
+
+//Ahora la clave que asciende al nodo antecedente es la clave menor(izquierda) del nodo a restaurar
+void ArbolB::MoverIzquierda (ApuntadorPagina P, int K)
+{
+  int J;
+  //with P.Ramas[K-1]// es el nodo con menos claves que el minimo
+  {
+    P->Ramas->ObtenerRama(K-1)->cuenta=P->Ramas->ObtenerRama(K-1)->cuenta+1;
+    P->Ramas->ObtenerRama(K-1)->Claves[P->Ramas->ObtenerRama(K-1)->cuenta]=P->Claves[K];
+    P->Ramas->ObtenerRama(K-1)->Ramas[P->Ramas->ObtenerRama(K-1)->cuenta]=P->Ramas->ObtenerRama(K)->Ramas[0];
+      // baja la clave del nodo padre
+  }
+  //with P.Ramas[K] // hermano derecho
+  {
+    P->Claves[K]=P->Ramas->ObtenerRama(K)->Claves[1];   //sube al nodo padre de la clave 1 del hermano derecho, sustituye a la que bajo
+    P->Ramas[0]=P->Ramas->ObtenerRama(K)->Ramas[1];
+    P->Ramas->ObtenerRama(K)->cuenta=P->Ramas->ObtenerRama(K)->cuenta-1;
+    
+    for (J=1; J<=P->Ramas->ObtenerRama(K)->cuenta; J++)
+    {
+       P->Ramas->ObtenerRama(K)->Claves[J]= P->Ramas->ObtenerRama(K)->Claves[J+1];
+       P->Ramas->ObtenerRama(K)->Ramas[J] = P->Ramas->ObtenerRama(K)->Ramas[J+1];
+    }
+  }
+}
+
+
+
+//Este metodo forma un solo nodo
+//Combina el nodo que esta en la rama K con el que esta en la rama k-1 y la clave mediana de ambos
+// que se encuentra en el nodo ascendente.
+void ArbolB::Combina(ApuntadorPagina P, int K)
+//forma un nuevo nodo con el hermano izquierdo la mediana ente el nodo problema y el hermano izquierdo
+//situado en el nodo padre y las claves del nodo problema.
+{
+  int J;
+  ApuntadorPagina Q;
+  Q = P->Ramas->ObtenerRama(K);
+  
+  //with P.Ramas[K-1]//hermano izquierdo
+  {
+    P->Ramas->ObtenerRama(K-1)->cuenta = P->Ramas->ObtenerRama(K-1)->cuenta+1;
+    P->Ramas->ObtenerRama(K-1)->Claves[P->Ramas->ObtenerRama(K-1)->cuenta]=P->Claves[K];// baja clave mediana desde el nodo padre
+    P->Ramas->ObtenerRama(K-1)->Ramas[P->Ramas->ObtenerRama(K-1)->cuenta] = Q->Ramas[0];
+    
+    for (J=1; J<= Q->cuenta; J++)
+    {
+      P->Ramas->ObtenerRama(K-1)->cuenta = P->Ramas->ObtenerRama(K-1)->cuenta+1;
+      P->Ramas->ObtenerRama(K-1)->Claves[P->Ramas->ObtenerRama(K-1)->cuenta] = Q->Claves[J];
+      P->Ramas->ObtenerRama(K-1)->Ramas[P->Ramas->ObtenerRama(K-1)->cuenta] = Q->Ramas[J];
+    }
+  }
+ //Reajustadas las claves y ramas del nodo padre debido a que antes ascendio la clave K
+ //with P
+ 
+  for (J=K; J<= P->Ramas->ObtenerRama(K-1)->cuenta-1; J++)
+  {
+    P->Claves[J]=P->Claves[J+1];
+    P->Ramas[J]=P->Ramas[J+1];
+  }
+  P->cuenta=P->cuenta-1;
+ 
+ delete(Q);
+}  
 
 //////////////////FIN ARBOL B//////////////////////
 
@@ -3290,6 +3576,8 @@ int main()
 	ApuntadorPagina a = B.raizB;
 //	cout<<"HOLA:"<<endl;
 	B.RecorridoInordenB(a);
+	
+	B.Eliminar(10, B.raizB);
 	
 	
 	
