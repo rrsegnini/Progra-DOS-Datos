@@ -371,7 +371,6 @@ class Supermercado{
 		Codigo = 0;
 		codigoLugar = 0;
 		Nombre = "Nulo";
-		arbol=NULL;
 		
 		}
 		
@@ -380,7 +379,7 @@ class Supermercado{
 			Codigo = _code;
 			Nombre = _name;
 			codigoLugar = _codLugar;
-			arbol=NULL;			
+			//arbol=NULL;			
 			}
 		
 		int getCodigo(){
@@ -403,7 +402,7 @@ class Supermercado{
 		int Codigo;
 		string Nombre;
 		int codigoLugar;
-		ArbolRN	* arbol;
+		
 		
 	friend class ArbolAVL;
 	
@@ -577,8 +576,42 @@ void Binario::InsertaNodo(Proveedor* o)
 	} 
 /////////////////////////////////////////////////////////////////
 
+class nodo;
+class ArbolAVL;
+
+/////////////////ARBOL RN//////////////////////////
+enum Color {RED, BLACK};
+
+class ArbolRN{
+
+  public:
+
+  nodo* raiz;
+  //ArbolRN():raiz(NULL){}
+  
+  ArbolRN(){
+  raiz=NULL;
+  }
+
+  void insertarValorNodoRN(int _code, string _descripcion);
+  //void inordenRN(nodo*R);
+  void levelOrder();
+
+  void rotarIzquierda(nodo *&, nodo *&);
+  void rotarDerecha(nodo *&, nodo *&);
+  void aplicarReglas(nodo *&, nodo *&);
+  nodo* InsertarNodoRN(nodo* RaizRN, nodo *pt);
+  
+  void InordenRN(nodo *R);
+  bool LeerCategorias(ArbolAVL AVL);
+
+ // void InordenRN(nodo *T);
+  int ConsultarTransporteAux2(nodo*H, int idT, int bandera, int x);
+
+};
 
 
+//////////////FIN ARBOL RN////////////////////////
 
 
 
@@ -619,6 +652,7 @@ class nodo {
 			Hder = NULL;
 			
 			FB=0;
+		//	arbol = NULL;
 			//padre=NULL;
 	    	}
 		
@@ -717,6 +751,9 @@ class nodo {
 	Supermercado* valorS;
 		Categoria* valorC;
 		
+	ArbolRN	arbol;	
+	
+	
  private:
     int valor;
     Proveedor* valorP;
@@ -737,7 +774,7 @@ class nodo {
 	
 	int FB;
     
-    
+    //ArbolRN	* arbol;
     
         
    friend class listaDC;
@@ -765,7 +802,7 @@ class ArbolAVL{
 	
 
     void PreordenI(nodo *k);
-    ArbolRN * BuscarSupermercado(nodo *&ra, ArbolRN *& arbolS, int _codeSuper);    
+    ArbolRN BuscarSupermercado(nodo *ra, int _codeSuper);    
     void InsertarBalanceado(nodo *&ra, int _code, int _codLugar, string _name);
 
     bool Hh;
@@ -794,7 +831,7 @@ void ArbolAVL::InsertaNodoAVL(int _code, int _codLugar, string _name)
     if(raiz==NULL){
     	Supermercado * s = new Supermercado(_code, _codLugar, _name);
         raiz = new nodo(s);
-        raiz;
+
     }else{
         //raiz->InsertaAVL(_code, _codLugar, _name);
        // Supermercado * s = new Supermercado(_code, _codLugar, _name);
@@ -1787,7 +1824,7 @@ void ArbolB::Combina(ApuntadorPagina P, int& K)
 
 
 
-
+/*
 /////////////////ARBOL RN//////////////////////////
 enum Color {RED, BLACK};
 
@@ -1799,7 +1836,8 @@ class ArbolRN{
   //ArbolRN():raiz(NULL){}
   
   ArbolRN(){
-  raiz=NULL;}
+  raiz=NULL;
+  }
 
   void insertarValorNodoRN(int _code, string _descripcion);
   //void inordenRN(nodo*R);
@@ -1817,7 +1855,7 @@ class ArbolRN{
   int ConsultarTransporteAux2(nodo*H, int idT, int bandera, int x);
 
 };
-
+*/
 nodo* ArbolRN :: InsertarNodoRN(nodo* RaizRN, nodo *pt){
     if (RaizRN == NULL)
        return pt;
@@ -1970,27 +2008,29 @@ void ArbolRN ::aplicarReglas(nodo *&RaizRN, nodo *&pt){
 
 
 
-ArbolRN* ArbolAVL::BuscarSupermercado(nodo *&ra, ArbolRN *& arbolS, int _codeSuper){
+ArbolRN ArbolAVL::BuscarSupermercado(nodo *ra, int _codeSuper){
    // nodo *n1;
-
+	ArbolRN n;
     if(ra==NULL){
     	cout<<"No existe"<<endl;
-    	return NULL;
+    	return n;
     }else{
        
         if(_codeSuper==ra->valorS->getCodigo()){
         	//cout<<"Ahi esta"<<endl;
         //	ra->valorS->arbol->insertarValorNodoRN(45, "Verduras");
-        	return ra->valorS->arbol;
+        	//arbolS = ra->valorS->arbol;
+
+        	return ra->arbol;
         }
 
 		if (_codeSuper<ra->valorS->getCodigo()){
-			return BuscarSupermercado(ra->Hizq, arbolS, _codeSuper);
+			return BuscarSupermercado(ra->Hizq, _codeSuper);
 			
 		
         }else{
             if(_codeSuper > ra->valorS->getCodigo()){
-                return BuscarSupermercado(ra->Hder, arbolS, _codeSuper);
+                return BuscarSupermercado(ra->Hder, _codeSuper);
                }
          }
    }
@@ -2019,6 +2059,8 @@ void ArbolRN::InordenRN(nodo *R){
 		}
 	}
 //////////////FIN ARBOL RN////////////////////////
+
+
 
 class listaDC {
    public:
@@ -2632,12 +2674,14 @@ bool ArbolAVL:: LeerSupermercados() { //Leer Supermercados
 	return false;
 }
 
-bool ArbolRN:: LeerCategorias() { //Leer Categorías
+bool ArbolRN:: LeerCategorias(ArbolAVL AVL) { //Leer Categorías
 
 	string cod_c;
 	string des_c;
+	string cod_sup;
   	int cont = 1;
   	int int_cod;
+  	int int_cod_sup;
 
 	std::ifstream is("Categorias.txt");     // open file
 	
@@ -2666,7 +2710,7 @@ bool ArbolRN:: LeerCategorias() { //Leer Categorías
 				{
 				switch (cont)
 					{
-				//	case 1:	cout<<"JEJE"<<endl;
+					case 1:	cod_sup = l;
 					break; 
 					
 					case 2: cod_c = l;
@@ -2684,7 +2728,12 @@ bool ArbolRN:: LeerCategorias() { //Leer Categorías
 			if (VerificarEntero(cod_c))
 				{
 				int_cod = RetornarEntero(cod_c);
+				int_cod_sup = RetornarEntero(cod_sup);
 				
+				ArbolRN arbolTemp = AVL.BuscarSupermercado(AVL.raiz, int_cod_sup);
+
+				arbolTemp.insertarValorNodoRN(int_cod, des_c);
+	
 				
 				insertarValorNodoRN(int_cod, des_c);	
 			//	Categoria * o = new Categoria(int_cod, des_c);
@@ -3619,20 +3668,25 @@ int main()
 //	cout<<"BARRA SEPARADORA"<<endl;
 	
 	
-	
+	ArbolAVL AVL;
+	AVL.LeerSupermercados();
 	
 	ArbolRN RN;
-	RN.LeerCategorias();
+	RN.LeerCategorias(AVL);
 	/*
 	RN.insertarValorNodoRN(45, "Verduras");
 	RN.insertarValorNodoRN(44, "Joyas");
 	RN.insertarValorNodoRN(38, "Arroz");
 	nodo * cat = RN.raiz;
 	*/
+	
+	
 	RN.InordenRN(RN.raiz);
 	
 	
-	ArbolAVL AVL;
+	
+	
+	
 	
 	AVL.InsertaNodoAVL(87, 87, "MaxiPali");
 /*	AVL.InsertaNodoAVL(85, 89, "Palí");
@@ -3644,19 +3698,24 @@ int main()
 	AVL.InsertaNodoAVL(37, 89, "AutoMercado");
 	*/
 	
-//	AVL.LeerSupermercados();
+//	
 	
 	AVL.PreordenI(AVL.raiz);
-	ArbolRN * hola = new ArbolRN();
+//	ArbolRN * hola = new ArbolRN();
 	
-	ArbolRN * erreene = AVL.BuscarSupermercado(AVL.raiz, hola, 87);
-	ArbolRN aa = *hola;
 	
-	erreene->insertarValorNodoRN(45, "Verduras");
-	
-//ArbolRN * erreene = AVL.BuscarSupermercado(AVL.raiz, hola, 87);
+
 
 	
+	
+//	aa.insertarValorNodoRN(45, "Verduras");
+/*	
+ArbolRN * hola2 = new ArbolRN();	
+ArbolRN * jeje = AVL.BuscarSupermercado(AVL.raiz, hola2, 87);
+
+jeje->InordenRN(hola2->raiz);
+
+*/	
 	
 	/*
 	if (ListaProveedores.LeerProveedores() && ListaClientes.LeerClientes() && ListaCategorias.LeerCategorias() && ListaProductos.LeerProductos())
