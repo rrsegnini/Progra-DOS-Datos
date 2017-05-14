@@ -371,6 +371,7 @@ class Supermercado{
 		Codigo = 0;
 		codigoLugar = 0;
 		Nombre = "Nulo";
+		arbol=NULL;
 		
 		}
 		
@@ -378,7 +379,8 @@ class Supermercado{
 			{
 			Codigo = _code;
 			Nombre = _name;
-			codigoLugar = _codLugar;			
+			codigoLugar = _codLugar;
+			arbol=NULL;			
 			}
 		
 		int getCodigo(){
@@ -619,13 +621,7 @@ class nodo {
 			FB=0;
 			//padre=NULL;
 	    	}
-		/*
-	   nodo(Supermercado* v, nodo * signodo)
-	    {
-	    	
-	       valorS = v;
-	       siguiente = signodo;
-	    }*/
+		
 		//Fin Constructor Supermercado
 		
 		
@@ -701,7 +697,8 @@ class nodo {
 	    }
 		//Fin Constructor Cliente
 		
-		//Constructor Cliente
+		
+		//Constructor Factura
 		nodo(ItemFactura* v)
 			{
 	    	valorF = v;
@@ -715,19 +712,19 @@ class nodo {
 	       valorF = v;
 	       siguiente = signodo;
 	    }
-		//Fin Constructor Cliente
+		//Fin Constructor Factura
 		
-	
-		
+	Supermercado* valorS;
+		Categoria* valorC;
 		
  private:
     int valor;
     Proveedor* valorP;
-    Categoria* valorC;
+    //Categoria* valorC;
     Producto* valorPp;
     Cliente* valorCl;
     ItemFactura* valorF;
-    Supermercado* valorS;
+    //Supermercado* valorS;
     
     nodo *siguiente;
     nodo *anterior;
@@ -768,7 +765,7 @@ class ArbolAVL{
 	
 
     void PreordenI(nodo *k);
-    ArbolRN * BuscarSupermercado(nodo *&ra, int _codeSuper);    
+    ArbolRN * BuscarSupermercado(nodo *&ra, ArbolRN *& arbolS, int _codeSuper);    
     void InsertarBalanceado(nodo *&ra, int _code, int _codLugar, string _name);
 
     bool Hh;
@@ -1027,30 +1024,6 @@ void ArbolAVL:: InsertaNodoOferta(nodo *H,int idHotel, int  idOferta,int  precio
 */
 
 
-ArbolRN* ArbolAVL::BuscarSupermercado(nodo *&ra, int _codeSuper){
-   // nodo *n1;
-
-    if(ra==NULL){
-    	cout<<"No existe"<<endl;
-    	return NULL;
-    }else{
-       
-        if(_codeSuper==ra->valorS->getCodigo()){
-        	cout<<"Ahi esta"<<endl;
-        	return ra->valorS->arbol;
-        }
-
-		if (_codeSuper<ra->valorS->getCodigo()){
-			BuscarSupermercado(ra->Hizq, _codeSuper);
-			
-		
-        }else{
-            if(_codeSuper > ra->valorS->getCodigo()){
-                BuscarSupermercado(ra->Hder,_codeSuper);
-               }
-         }
-   }
-}
     
 
 
@@ -1073,10 +1046,11 @@ public:
     int ObtenerClave(int Numero);
     nodo* ObtenerApuntadorClave(int Numero);
 
-
+	nodo* arregloClaves[5];
+	
 private:
 
-    nodo* arregloClaves[5];
+    
 
     friend class Pagina;
 };
@@ -1118,10 +1092,11 @@ public:
     }
     void InsertarRama(ApuntadorPagina Rama, int Numero);
     ApuntadorPagina ObtenerRama(int Numero);
-
+	ApuntadorPagina arregloRamas[5];
+	
 private:
 
-    ApuntadorPagina arregloRamas[5];
+   
 
     friend class Pagina;
 };
@@ -1191,28 +1166,31 @@ public:
     void RecorridoInordenB(ApuntadorPagina Raiz);
     bool existeCliente(ApuntadorPagina Raiz,int _Numero);
 
+
 	bool LeerClientes();
     // Funcion que simplemente agrega un cliente usando IniciarInsercionB(para Numero se utiliza el mismo _id, son 2 _id
     // en total)
     void Clientes();
     
-    void Eliminar (int C1, ApuntadorPagina & Raiz);
     
-    void EliminarRegistro(int C1, ApuntadorPagina  Raiz, bool Encontrado);
     
-    void Quitar(ApuntadorPagina  P, int K);
+    void Eliminar (int C1, ApuntadorPagina Raiz);
     
-    void Sucesor (ApuntadorPagina P, int K);
+    void EliminarRegistro(int C1, ApuntadorPagina  Raiz, bool & Encontrado);
     
-    void BuscarNodo(int Clave, ApuntadorPagina P, bool Encontrado, int K);
+    void Quitar(ApuntadorPagina & P, int &K);
+    
+    void Sucesor (ApuntadorPagina P, int &K);
+    
+    void BuscarNodo(int Clave, ApuntadorPagina P, bool &Encontrado, int &K);
 
-	void Restablecer (ApuntadorPagina P, int K);
+	void Restablecer (ApuntadorPagina P, int &K);
 	
-	void MoverDerecha(ApuntadorPagina P, int K);
+	void MoverDerecha(ApuntadorPagina P, int &K);
 	
-	void Combina(ApuntadorPagina P, int K);
+	void Combina(ApuntadorPagina P, int &K);
 	
-	void MoverIzquierda (ApuntadorPagina P, int K);
+	void MoverIzquierda (ApuntadorPagina P, int &K);
 	
     //private:
 
@@ -1298,7 +1276,7 @@ ApuntadorPagina ArbolB::EmpujarB(ApuntadorPagina Raiz, int Numero, int _id, stri
                 Raiz->EmpujarArriba = false;
                 Raiz = MeterHojaB(Raiz,  _id,  _nombre,  _direccion,  _telefono);
             }
-        }
+        //}
         else{
             Raiz->EmpujarArriba = true;
             Raiz = DividirNodoB(Raiz,  _id,  _nombre,  _direccion,  _telefono);
@@ -1308,10 +1286,11 @@ ApuntadorPagina ArbolB::EmpujarB(ApuntadorPagina Raiz, int Numero, int _id, stri
 
     }
 }
-
+}
 ApuntadorPagina ArbolB::BuscarNodoB(ApuntadorPagina Raiz, int Numero)
 {
-    int PClave1 = Raiz->Claves->ObtenerClave(1);
+    //int PClave1 = Raiz->Claves->ObtenerClave(1);
+    int PClave1 = Raiz->Claves->ObtenerApuntadorClave(1)->valorCl->getCedula();
     if(Numero < PClave1){
         Raiz->Esta = false;
         Raiz->K = 0;
@@ -1424,6 +1403,7 @@ void ArbolB::RecorridoInordenB(ApuntadorPagina Raiz){
         }
     }
 }
+
 /*														/////////////////////////////////REVISAR
 bool ArbolB::existeCliente(ApuntadorPagina Raiz ,int _Numero) {
     if (Raiz == NULL) {
@@ -1510,14 +1490,17 @@ int PilaB::Size(){
     return cont;
 }
 
-
-void ArbolB::BuscarNodo(int Clave, ApuntadorPagina P, bool Encontrado, int K)
+/*
+void ArbolB::BuscarNodo(int Clave, ApuntadorPagina P, bool & Encontrado, int & K)
 {
 // Este método examina la pagina referenciada por P. De no //encontrarse el valor nuevo, K será el índice de la rama por //donde bajar
 
 {
-if (Clave < P->Claves->ObtenerApuntadorClave(K)->valorCl->getCedula())   // recuerde que los arreglos aquí inician en 1
+int C =  P->Claves->ObtenerApuntadorClave(1)->valorCl->getCedula();
+if (Clave < C)   // recuerde que los arreglos aquí inician en 1
   {
+  	//P->K = 0;
+	//P->Esta = 0;
      Encontrado=false;
      K=0; //rama por donde descender
   }
@@ -1530,7 +1513,7 @@ while(Clave<P->Claves->ObtenerApuntadorClave(K)->valorCl->getCedula() and (K>1))
 		K=K-1;
 	}
 	
-	if (Clave=P->Claves->ObtenerApuntadorClave(K)->valorCl->getCedula()){
+	if (Clave==P->Claves->ObtenerApuntadorClave(K)->valorCl->getCedula()){
 		Encontrado=true;
 	}
     
@@ -1540,7 +1523,7 @@ while(Clave<P->Claves->ObtenerApuntadorClave(K)->valorCl->getCedula() and (K>1))
 
 
 //Tiene como funcion devolver la nueva raiz si la raiz inicial se ha quedado sin claves
-void ArbolB::Eliminar (int C1, ApuntadorPagina & Raiz){
+void ArbolB::Eliminar (int C1, ApuntadorPagina Raiz){
 
     bool Encontrado;
     ApuntadorPagina P;
@@ -1569,11 +1552,11 @@ void ArbolB::Eliminar (int C1, ApuntadorPagina & Raiz){
 //Si es una hoja, llama a elimina
 // Si no es hoja, se busca el sucesor inmediato, se coloca en el elemento a eliminar
 //Luego se suprime el sucesor  en la hoja
-void ArbolB::EliminarRegistro(int C1, ApuntadorPagina  Raiz, bool Encontrado)
+void ArbolB::EliminarRegistro(int C1, ApuntadorPagina Raiz, bool & Encontrado)
 {
      int K;
      
-     if (Raiz==NULL)
+     if (BVacio())
         Encontrado= false; // se ha llegado debajo de una hoja, la clave no esta en el arbol
      else
      {
@@ -1582,9 +1565,11 @@ void ArbolB::EliminarRegistro(int C1, ApuntadorPagina  Raiz, bool Encontrado)
          BuscarNodo(C1,Raiz,Encontrado,K);
          if (Encontrado)
          {
-           if (Raiz->Ramas->ObtenerRama(K-1))//Las ramas estan indexadas desde 0 a Max, por lo que este nodo es hoja
+           if (Raiz->Ramas->ObtenerRama(K-1)==NULL)//Las ramas estan indexadas desde 0 a Max, por lo que este nodo es hoja
               {
 			  Quitar(Raiz,K);
+			 cout<<"Despues de Quitar: " << Raiz->Claves->ObtenerApuntadorClave(1)->valorCl->getCedula()<<endl;
+			  
           	}
            else //No es hoja
            {
@@ -1596,7 +1581,7 @@ void ArbolB::EliminarRegistro(int C1, ApuntadorPagina  Raiz, bool Encontrado)
          }  
          else // No ha sido localizada la clave
          {
-            EliminarRegistro (C1,Raiz->Ramas->ObtenerRama(K),Encontrado);
+            EliminarRegistro (C1,Raiz->Ramas->arregloRamas[K],Encontrado);
             // Las llamadas recursivas retornan el control a este punto,  
             // se comprueba que el nodo hijo mantenga un numero
             // claves igual o mayor que el minimo necesario
@@ -1616,7 +1601,7 @@ void ArbolB::EliminarRegistro(int C1, ApuntadorPagina  Raiz, bool Encontrado)
 
 //recibe la direccion del nodo y la posicion de la clave a eliminar.
 //Elimina la clave junto con la rama que le corresponde
-void ArbolB::Quitar(ApuntadorPagina  P, int K)
+void ArbolB::Quitar(ApuntadorPagina & P, int& K)
 {
   int J; //entero
    //With P
@@ -1624,14 +1609,28 @@ void ArbolB::Quitar(ApuntadorPagina  P, int K)
    {
     for (J= K+1;J <= P->cuenta; J++)
     {
-    	nodo* temp = P->Claves->ObtenerApuntadorClave(J);
-    	nodo* temp2 = P->Claves->ObtenerApuntadorClave(J-1);
-        temp2 = temp;   //Desplaza una posicion a la izquierda, con ello elimina la clave
-       //delete (temp);
+    //	P->Claves->ObtenerApuntadorClave(J) = P->Claves->ObtenerApuntadorClave(J-1);
+    
+    	//P->Claves[J-1] = P->Claves[J];
+    	//P->Claves[J-1].ObtenerClave(0);
+    //	P->Ramas[J-1] =  P->Ramas[J];
+		
+//	cout<<	"DAAAAAAAAAAAAAAAAH: "<<P->Claves->ObtenerApuntadorClave(J)->valorCl->getCedula()<<endl;    
+		
+    	
+    //	nodo* temp = P->Claves->ObtenerApuntadorClave(J);
+    	P->Claves->arregloClaves[J-1] = P->Claves->ObtenerApuntadorClave(J);
+    //	nodo* temp2 = P->Claves->ObtenerApuntadorClave(J-1);
+     //   temp2 = temp;   //Desplaza una posicion a la izquierda, con ello elimina la clave}
+        
+    //    cout<<temp2->valorCl->getCedula()<<endl;
+      //delete (temp);
        
-       ApuntadorPagina temp3 = P->Ramas->ObtenerRama(J);
-       ApuntadorPagina temp4 = P->Ramas->ObtenerRama(J-1);
-       temp4 = temp3;
+       P->Ramas->arregloRamas[J-1] = P->Ramas->ObtenerRama(J);
+    //   ApuntadorPagina temp3 = P->Ramas->ObtenerRama(J);
+  //     ApuntadorPagina temp4 = P->Ramas->ObtenerRama(J-1);
+    //   temp4 = temp3;
+       
     }
     P->cuenta=(P->cuenta)-1;
 }
@@ -1640,7 +1639,7 @@ void ArbolB::Quitar(ApuntadorPagina  P, int K)
 
 
 //Busca la clave inmediatamente sucesor de la clave k y reemplaza la clave K
-void ArbolB::Sucesor(ApuntadorPagina P, int K)
+void ArbolB::Sucesor(ApuntadorPagina P, int& K)
 {
   ApuntadorPagina Q;
   
@@ -1657,7 +1656,7 @@ void ArbolB::Sucesor(ApuntadorPagina P, int K)
 
 //Este realiza las acciones mas complejas del proceso. Restaura el nodo P.Ramas[K]
 //el cual ha quedado con un numero menor de claves, menos que el minimo
-void ArbolB::Restablecer (ApuntadorPagina P, int K)
+void ArbolB::Restablecer (ApuntadorPagina P, int& K)
 {
   if (K>0)   //Tiene hermano izquierdo
   {
@@ -1675,10 +1674,12 @@ void ArbolB::Restablecer (ApuntadorPagina P, int K)
       if (P->Ramas->ObtenerRama(1)->cuenta > 5)
       {
         //Tiene mas claves que el minimo
-        MoverIzquierda(P,1);
+        int int_temp = 1;
+        MoverIzquierda(P, int_temp);
     }
       else{
-        Combina(P,1);
+      	int int_temp = 1;
+        Combina(P, int_temp);
     }
    }
 } 
@@ -1688,7 +1689,7 @@ void ArbolB::Restablecer (ApuntadorPagina P, int K)
 
 //Mueve una clave del nodo antecedente(P) al nodo que se esta restaurando
 //Asciende la clave mayor del hermano izquierdo al nodo antecedente
- void ArbolB::MoverDerecha(ApuntadorPagina P, int K)
+ void ArbolB::MoverDerecha(ApuntadorPagina P, int& K)
  //En este metodo se deja hueco en el nodo P.Ramas[K] que es el nodo que tiene menos claves que elminimo 
  //necesario, inserta la clave k del nodo antecedente y a su vez asciende la clave mayor ( la mas a la derecha) 
  //del hermano izquierdo
@@ -1718,7 +1719,7 @@ void ArbolB::Restablecer (ApuntadorPagina P, int K)
 
 
 //Ahora la clave que asciende al nodo antecedente es la clave menor(izquierda) del nodo a restaurar
-void ArbolB::MoverIzquierda (ApuntadorPagina P, int K)
+void ArbolB::MoverIzquierda (ApuntadorPagina P, int& K)
 {
   int J;
   //with P.Ramas[K-1]// es el nodo con menos claves que el minimo
@@ -1747,7 +1748,7 @@ void ArbolB::MoverIzquierda (ApuntadorPagina P, int K)
 //Este metodo forma un solo nodo
 //Combina el nodo que esta en la rama K con el que esta en la rama k-1 y la clave mediana de ambos
 // que se encuentra en el nodo ascendente.
-void ArbolB::Combina(ApuntadorPagina P, int K)
+void ArbolB::Combina(ApuntadorPagina P, int& K)
 //forma un nuevo nodo con el hermano izquierdo la mediana ente el nodo problema y el hermano izquierdo
 //situado en el nodo padre y las claves del nodo problema.
 {
@@ -1782,7 +1783,7 @@ void ArbolB::Combina(ApuntadorPagina P, int K)
 }  
 
 //////////////////FIN ARBOL B//////////////////////
-
+*/
 
 
 
@@ -1795,7 +1796,10 @@ class ArbolRN{
   public:
 
   pnodo raiz;
-  ArbolRN():raiz(NULL){}
+  //ArbolRN():raiz(NULL){}
+  
+  ArbolRN(){
+  raiz=NULL;}
 
   void insertarValorNodoRN(int _code, string _descripcion);
   //void inordenRN(nodo*R);
@@ -1962,6 +1966,34 @@ void ArbolRN ::aplicarReglas(nodo *&RaizRN, nodo *&pt){
     }
 	}
     RaizRN->color = BLACK;
+}
+
+
+
+ArbolRN* ArbolAVL::BuscarSupermercado(nodo *&ra, ArbolRN *& arbolS, int _codeSuper){
+   // nodo *n1;
+
+    if(ra==NULL){
+    	cout<<"No existe"<<endl;
+    	return NULL;
+    }else{
+       
+        if(_codeSuper==ra->valorS->getCodigo()){
+        	//cout<<"Ahi esta"<<endl;
+        //	ra->valorS->arbol->insertarValorNodoRN(45, "Verduras");
+        	return ra->valorS->arbol;
+        }
+
+		if (_codeSuper<ra->valorS->getCodigo()){
+			return BuscarSupermercado(ra->Hizq, arbolS, _codeSuper);
+			
+		
+        }else{
+            if(_codeSuper > ra->valorS->getCodigo()){
+                return BuscarSupermercado(ra->Hder, arbolS, _codeSuper);
+               }
+         }
+   }
 }
 
 void ArbolRN ::insertarValorNodoRN(int _code, string _descripcion){
@@ -3560,24 +3592,32 @@ int main()
 	ListaProveedores.PostordenR(r);
 	ListaProveedores.PreordenR(r);
 	
+	
+	
+	
 	ArbolB B;
 	
-	B.LeerClientes();
-	//B.IniciarInsercionB(89,89,"Roberto","Heredia", "86582179");
 	
-	//B.RecorridoInordenB(a);
+//	B.LeerClientes();
+
+
+	B.IniciarInsercionB(89,89,"Roberto","Heredia", "86582179");
+	
+	B.IniciarInsercionB(100,100,"Juan","Heredia", "86582179");
+	B.IniciarInsercionB(101,101,"Daniel","Paraiso", "86582179");
+	B.IniciarInsercionB(105,105,"Sergio","Alajuela", "86582232");
+	B.IniciarInsercionB(11,11,"Amy","Tres Rios", "86582232");
 	
 	
+	//cout<<"AAAAASFFFFFFFFFFFFFFFFFFFFFF: " <<B.raizB->Claves->ObtenerValor()<<endl;
 	
-//	B.IniciarInsercionB(105,105,"Juan","Heredia", "86582179");
-//	B.IniciarInsercionB(100,100,"Daniel","Paraiso", "86582179");
-//	B.IniciarInsercionB(101,101,"Sergio","Alajuela", "86582232");
 	
-	ApuntadorPagina a = B.raizB;
-//	cout<<"HOLA:"<<endl;
-	B.RecorridoInordenB(a);
+//	B.Eliminar(89, B.raizB);
 	
-	B.Eliminar(10, B.raizB);
+	B.RecorridoInordenB(B.raizB);
+	
+//	cout<<"BARRA SEPARADORA"<<endl;
+	
 	
 	
 	
@@ -3594,7 +3634,7 @@ int main()
 	
 	ArbolAVL AVL;
 	
-	AVL.InsertaNodoAVL(87, 89, "MaxiPali");
+	AVL.InsertaNodoAVL(87, 87, "MaxiPali");
 /*	AVL.InsertaNodoAVL(85, 89, "Palí");
 	AVL.InsertaNodoAVL(89, 89, "HiperMáx");
 	AVL.InsertaNodoAVL(98, 89, "Fresnos");
@@ -3607,12 +3647,14 @@ int main()
 //	AVL.LeerSupermercados();
 	
 	AVL.PreordenI(AVL.raiz);
+	ArbolRN * hola = new ArbolRN();
 	
-	ArbolRN * erreene = AVL.BuscarSupermercado(AVL.raiz, 89);
+	ArbolRN * erreene = AVL.BuscarSupermercado(AVL.raiz, hola, 87);
+	ArbolRN aa = *hola;
 	
-	erreene->raiz;
+	erreene->insertarValorNodoRN(45, "Verduras");
 	
-	
+//ArbolRN * erreene = AVL.BuscarSupermercado(AVL.raiz, hola, 87);
 
 	
 	
