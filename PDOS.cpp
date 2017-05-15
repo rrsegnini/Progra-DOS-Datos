@@ -636,6 +636,11 @@ class ArbolRN{
   int ConsultarTransporteAux2(nodo*H, int idT, int bandera, int x);
   
   ArbolAA BuscarCategoria(nodo *ra, int _codP, int _codC, string _nomC, float _precio, int _stock);
+  ArbolAA BuscarCategoria(nodo *ra, int _codC);
+  
+  bool VerificarCategoria(nodo *ra, int _codC);
+  
+ 
 
 };
 
@@ -662,6 +667,10 @@ public:
    int obtenerPrecioOferta(nodo *O,int r,int ci,int cd);
    
    bool LeerProductos(ArbolAVL &AVL);
+   
+   bool VerificarProducto(nodo *R, int cod);
+   
+    int VerificarStock(nodo *R, int cod);
 
 
 };
@@ -1229,11 +1238,45 @@ void ArbolAA::PreordenI(nodo *R){
     if(R==NULL){
         return;
     }else{
-        cout<<"Codigo: "<<R->valorPp->getCodProducto()<<endl;
+        cout<<endl<<"Codigo: "<<R->valorPp->getCodProducto()<<endl;
         cout<<"Nombre: "<<R->valorPp->getNombre()<<endl;
         
         PreordenI(R->left);
         PreordenI(R->right);
+    }
+}
+
+bool ArbolAA::VerificarProducto(nodo *R, int cod){
+    if(R==NULL){
+    	cout<<"Producto invalido"<<endl;
+        return false;
+    }else{
+    	if (R->valorPp->getCodProducto()==cod){
+    		return true;
+		}
+    	if (R->valorPp->getCodProducto()<cod){
+    		return VerificarProducto(R->right, cod);
+		}
+    
+        return VerificarProducto(R->left, cod);
+        
+    }
+}
+
+int ArbolAA::VerificarStock(nodo *R, int cod){
+    if(R==NULL){
+    	cout<<"Producto invalido"<<endl;
+        return false;
+    }else{
+    	if (R->valorPp->getCodProducto()==cod){
+    		return R->valorPp->getCantidadStock();
+		}
+    	if (R->valorPp->getCodProducto()<cod){
+    		return VerificarStock(R->right, cod);
+		}
+    
+        return VerificarStock(R->left, cod);
+        
     }
 }
 
@@ -2259,7 +2302,7 @@ ArbolAA ArbolRN::BuscarCategoria(nodo *ra, int _codP, int _codC, string _nomC, f
 		   // nodo *n1;
 	ArbolAA n;
     if(ra==NULL){
-    	cout<<"No existe la categoria, I guess"<<endl;
+    	//cout<<"No existe la categoria, I guess"<<endl;
     	return n;
     }else{
        
@@ -2280,8 +2323,55 @@ ArbolAA ArbolRN::BuscarCategoria(nodo *ra, int _codP, int _codC, string _nomC, f
    }
 }
 
+ArbolAA ArbolRN::BuscarCategoria(nodo *ra, int _codC){
+		   // nodo *n1;
+	ArbolAA n;
+    if(ra==NULL){
+    	//cout<<"No existe la categoria, I guess"<<endl;
+    	return n;
+    }else{
+       
+        if(_codC==ra->valorC->getCodigo()){
+			//ra->arbolaa.lookup(_codP, _codC, _nomC, _precio, _stock);
+        	return ra->arbolaa;
+        }
 
+		if (_codC<ra->valorC->getCodigo()){
+			return BuscarCategoria(ra->Hizq, _codC);
+			
+		
+        }else{
+            if(_codC > ra->valorC->getCodigo()){
+                return BuscarCategoria(ra->Hder, _codC);
+               }
+         }
+   }
+}
 
+bool ArbolRN::VerificarCategoria(nodo *ra, int _codC){
+		   // nodo *n1;
+	//ArbolAA n;
+    if(ra==NULL){
+    	//cout<<"No existe la categoria, I guess"<<endl;
+    	return false;
+    }else{
+       
+        if(_codC==ra->valorC->getCodigo()){
+			//ra->arbolaa.lookup(_codP, _codC, _nomC, _precio, _stock);
+        	return true;
+        }
+
+		if (_codC<ra->valorC->getCodigo()){
+			return VerificarCategoria(ra->Hizq, _codC);
+			
+		
+        }else{
+            if(_codC > ra->valorC->getCodigo()){
+                return VerificarCategoria(ra->Hder, _codC);
+               }
+         }
+   }
+}
 
 void ArbolRN ::insertarValorNodoRN(int _code, string _descripcion){
 	Categoria * c = new Categoria(_code, _descripcion);
@@ -2302,6 +2392,7 @@ void ArbolRN::InordenRN(nodo *R){
 		}else{
 			InordenRN(R->Hizq);
 			cout<<R->valorC->getCodigo()<< "-";
+			cout<<R->valorC->getDescripcion()<<endl;
 			InordenRN(R->Hder);
 		}
 	}
@@ -3094,9 +3185,6 @@ bool ArbolAA:: LeerProductos(ArbolAVL &AVL) { //Leer Productos
 	
 				ArbolAA DOBLEA = ROJONEGRO.BuscarCategoria(ROJONEGRO.raiz, int_cod, int_cat, Nombre, int_precio, int_stock);
 	
-				cout<<endl<<"Products: "<<endl;
-				DOBLEA.PreordenI(DOBLEA.raiz);
-				cout<<endl<<"Fin Products"<<endl;	
 		
 				
 				l = c;
@@ -3129,10 +3217,7 @@ bool ArbolAA:: LeerProductos(ArbolAVL &AVL) { //Leer Productos
 		
 		ArbolRN ROJONEGRO = AVL.BuscarSupermercado(AVL.raiz, int_cod_sup);
 		ArbolAA DOBLEA = ROJONEGRO.BuscarCategoria(ROJONEGRO.raiz, int_cod, int_cat, Nombre, int_precio, int_stock);
-		cout<<"Products: "<<endl;
-		DOBLEA.PreordenI(DOBLEA.raiz);
-		cout<<endl<<"Fin Products"<<endl;
-		
+
 		return true;
 	  	}
 	cout<<"*********Error en los productos*********"<<endl;
@@ -3870,6 +3955,10 @@ int main()
 	int precio;
 	char yes_no;
 	int cod_cliente_input_int;
+	string super_input;
+	int int_super_input;
+	int int_cat_input;
+	int int_pro_input;
 	/*
 	listaDC Items;
 	Binario ListaProveedores;
@@ -3896,9 +3985,10 @@ int main()
 	
 	
 	
-	
 	if (BBB.LeerProveedores() && AVL.LeerSupermercados() && B.LeerClientes())
 		{
+			RN.LeerCategorias(AVL);
+			AA.LeerProductos(AVL);
 			//B.LeerClientes() && RN.LeerCategorias() && ListaProductos.LeerProductos()
 			/*
 		if (ListaProveedores.RevisarCod())
@@ -3954,25 +4044,62 @@ int main()
 				cout<<"------------------------ Supermercados disponibles: ------------------------"<<endl;
 				
 				AVL.PreordenI(AVL.raiz);
-			/*	
-				cout<<"------------------------ Categorias de productos disponibles: ------------------------"<<endl;
-				ListaCategorias.MostrarTodasCategorias();
+				
+				
+				
+				//ListaCategorias.MostrarTodasCategorias();
 				
 				while (true){
+				cout<<"\nIngrese el codigo del supermercado: ";
+				std::getline(std::cin,super_input);
 				
-				cout<<"\nIngrese el nombre de la categoria: ";
+				try{
+				int_super_input = std::stoi(super_input);
+				}
+				catch (std::exception& e) {
+    			std::cerr << "******************ERROR******************\n";
+ 				}
+				
+				
+				
+				RN = AVL.BuscarSupermercado(AVL.raiz, int_super_input);
+				
+				cout<<"------------------------ Categorias de productos disponibles: ------------------------"<<endl;
+				
+
+				RN.InordenRN(RN.raiz);
+				
+				
+				cout<<"\nIngrese el codigo de la categoria: ";
 				std::getline(std::cin,cat_input);
 				
-				if (ListaCategorias.VerificarCategoria(c000000000000000at_input)){
+				try{
+				int_cat_input = std::stoi(cat_input);
+				}
+				catch (std::exception& e) {
+    			std::cerr << "******************ERROR******************\n";
+ 				}
+ 				
+ 				
+				if (RN.VerificarCategoria(RN.raiz, int_cat_input)){
 					cout<<"------------------------  Productos disponibles en esta categoria: ------------------------"<<endl;//CORRER ESTO PARA ARRIBA
-					if (ListaProductos.MostrarProductos(cat_input, ListaCategorias))
-						{
-						
+					
+					AA = RN.BuscarCategoria(RN.raiz, int_cat_input);
+ 				
+ 					AA.PreordenI(AA.raiz);
+					
 						while (true){
-									cout<<"\nIngrese el nombre del producto: ";
+									cout<<"\nIngrese el codigo del producto: ";
 									std::getline(std::cin,pro_input);
 									
-									if (ListaProductos.VerificarProducto(pro_input))
+									try{
+										int_pro_input = std::stoi(pro_input);
+										}
+										catch (std::exception& e) {
+						    			std::cerr << "******************ERROR******************\n";
+						 				}
+ 				
+									if (AA.VerificarProducto(AA.raiz, int_pro_input))
 										{
 										break;
 										}
@@ -3992,7 +4119,7 @@ int main()
 					 					}
 					 				
 									 
-					 				if (ListaProductos.MostrarStock(pro_input)<int_cant_input){
+					 				if (AA.VerificarStock(AA.raiz, int_pro_input)<int_cant_input){
 										cout<<endl<<"******************No hay tantas unidades en stock******************"<<endl;
 										
 										}
@@ -4001,12 +4128,12 @@ int main()
 										}
 									}
 								break;
-						}
+						
 					}
 				//break;
 				}
 				
-				
+				/*
 				cod_categoria = ListaCategorias.MostrarCodigoCategoria(cat_input);
 				precio = ListaProductos.MostrarPrecio(pro_input);
 										
