@@ -1084,6 +1084,7 @@ void ArbolAVL::PreordenI(nodo *R){
     if(R==NULL){
         return;
     }else{
+    	cout<<R->valorS->getCodigo()<<" - ";
         cout<<R->valorS->getNombre()<<endl;
         PreordenI(R->Hizq);
         PreordenI(R->Hder);
@@ -1399,6 +1400,8 @@ public:
 	
 	void MoverIzquierda (ApuntadorPagina P, int &K);
 	
+	bool VerificarCliente(ApuntadorPagina Raiz, int cod);
+	
     //private:
 
     ApuntadorPagina raizB;
@@ -1426,11 +1429,9 @@ ApuntadorPagina ArbolB::InsertarB(ApuntadorPagina Raiz, int Numero, int _id, str
     ApuntadorPagina P = NULL;
 
     Raiz = EmpujarB(Raiz,Numero,  _id,  _nombre,  _direccion,  _telefono);
-    if (Raiz!=NULL){
     if	(Raiz->Esta){
     	Raiz->Esta= false;
     	return Raiz;
-	}
 	}
     if(Raiz->EmpujarArriba == true){
         P = new Pagina();
@@ -1485,7 +1486,7 @@ ApuntadorPagina ArbolB::EmpujarB(ApuntadorPagina Raiz, int Numero, int _id, stri
                 Raiz->EmpujarArriba = false;
                 Raiz = MeterHojaB(Raiz,  _id,  _nombre,  _direccion,  _telefono);
             }
-        //}
+        }
         else{
             Raiz->EmpujarArriba = true;
             Raiz = DividirNodoB(Raiz,  _id,  _nombre,  _direccion,  _telefono);
@@ -1495,11 +1496,10 @@ ApuntadorPagina ArbolB::EmpujarB(ApuntadorPagina Raiz, int Numero, int _id, stri
 
     }
 }
-}
+
 ApuntadorPagina ArbolB::BuscarNodoB(ApuntadorPagina Raiz, int Numero)
 {
-    //int PClave1 = Raiz->Claves->ObtenerClave(1);
-    int PClave1 = Raiz->Claves->ObtenerApuntadorClave(1)->valorCl->getCedula();
+    int PClave1 = Raiz->Claves->ObtenerClave(1);
     if(Numero < PClave1){
         Raiz->Esta = false;
         Raiz->K = 0;
@@ -1607,6 +1607,29 @@ void ArbolB::RecorridoInordenB(ApuntadorPagina Raiz){
             cout << "\n" << endl;
 
             RecorridoInordenB(Raiz->Ramas->ObtenerRama(I));
+
+            I++;
+        }
+    }
+}
+
+
+bool ArbolB::VerificarCliente(ApuntadorPagina Raiz, int cod){
+    if(Raiz == NULL){
+        return false;
+    }
+    else{
+        VerificarCliente(Raiz->Ramas->ObtenerRama(0), cod);
+        int I = 1;
+        while(I <= Raiz->cuenta){
+            nodo* Recorrido = Raiz->Claves->ObtenerApuntadorClave(I);
+
+            if (Recorrido->valorCl->getCedula() == cod){
+            	return true;
+			}
+            
+
+            VerificarCliente(Raiz->Ramas->ObtenerRama(I), cod);
 
             I++;
         }
@@ -3325,36 +3348,7 @@ bool listaDC::VerificarProducto(string prod) //Verifica que el producto exista
 	return false;
 	}
 	
-bool listaDC::VerificarCliente(string nom)
-	{
-	pnodo aux = primero;
-	string temp;
-	
-	if ((aux->valorCl)->getNombre() == nom)
-		{
-		(aux->valorCl)->sumarCont();
-		return true;
-		}
-	aux = aux->siguiente;
-	
-	while (aux != primero)
-		{
-		temp = (aux->valorCl)->getNombre();
-		
-		if (temp == nom)
-			{
-			cout<<"|||||Se aplica un descuento del 5% por ser cliente frecuente|||||"<<endl;
-			(aux->valorCl)->sumarCont();
-			return true;
-			}
-		else
-			{
-			aux=aux->siguiente;
-			}
-		}
-	cout<<"Cliente nuevo\n"<<endl;
-	return false;
-	}
+
 
 bool listaDC::VerificarCategoria(string cat)
 	{
@@ -3875,6 +3869,7 @@ int main()
 	string cant_input;
 	int precio;
 	char yes_no;
+	int cod_cliente_input_int;
 	/*
 	listaDC Items;
 	Binario ListaProveedores;
@@ -3898,11 +3893,11 @@ int main()
 	ArbolAVL AVL;
 	ArbolAA AA;
 	ArbolRN RN;
-	B.LeerClientes();
-		B.RecorridoInordenB(B.raizB);
 	
 	
-	if (BBB.LeerProveedores() && AVL.LeerSupermercados())
+	
+	
+	if (BBB.LeerProveedores() && AVL.LeerSupermercados() && B.LeerClientes())
 		{
 			//B.LeerClientes() && RN.LeerCategorias() && ListaProductos.LeerProductos()
 			/*
@@ -3938,14 +3933,28 @@ int main()
 				{
 				cout<<"------------------------ Clientes regulares: ------------------------"<<endl;
 				
-			
+				B.RecorridoInordenB(B.raizB);
 				
-				cout<<"\nIngrese el nombre completo del cliente: ";
+				cout<<"\nIngrese el codigo del cliente: ";
 				std::getline(std::cin,nom_input);
-			/*	if (ListaClientes.VerificarCliente(nom_input)){
+				try{
+				cod_cliente_input_int = std::stoi(cod_input);
+				}
+				catch (std::exception& e) {
+    			std::cerr << "******************ERROR******************\n";
+    			//return 0;
+ 				}
+				
+				
+				
+				if (B.VerificarCliente(B.raizB, cod_cliente_input_int)){
 					Desc = true;
 				}
 				
+				cout<<"------------------------ Supermercados disponibles: ------------------------"<<endl;
+				
+				AVL.PreordenI(AVL.raiz);
+			/*	
 				cout<<"------------------------ Categorias de productos disponibles: ------------------------"<<endl;
 				ListaCategorias.MostrarTodasCategorias();
 				
