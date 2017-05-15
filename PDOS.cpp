@@ -461,6 +461,8 @@ class Binario{
 		NodoBinario* RetornarRaiz();
 		bool LeerProveedores();
 		
+		bool VerificarProveedor(NodoBinario *R, int cod);
+		
 	private:
 		NodoBinario* raiz;
 		
@@ -477,11 +479,13 @@ void NodoBinario::InsertaBinario(int num)
 			Hizq->InsertaBinario(num);
 			}
 	}else{
+		if (num>valor){
 		if(Hder==NULL){
 			Hder = new NodoBinario(num);
 		}else{
 			Hder->InsertaBinario(num);
 
+		}
 		}
 	}
 	}
@@ -512,6 +516,26 @@ void Binario::PreordenR(NodoBinario *R){
 	
 		}
 	}
+	
+bool Binario::VerificarProveedor(NodoBinario *R, int cod){
+
+	if(R==NULL){
+		return false;
+	
+	}else{
+		if (R->valorP->getCodigo()==cod){
+			return true;
+		}
+		if (R->valorP->getCodigo()>cod){
+			VerificarProveedor(R->Hizq, cod);
+			
+		}
+		else{
+			VerificarProveedor(R->Hder, cod);
+		}
+	
+		}
+	}
 
 void Binario::InordenR(NodoBinario *R){
 	
@@ -536,7 +560,7 @@ void Binario::PostordenR(NodoBinario *R){
 		}
 	}
 NodoBinario* Binario::RetornarRaiz(){
-	cout<<raiz->valor<<endl;
+	//cout<<raiz->valor<<endl;
 	return raiz;
 }
 
@@ -556,12 +580,14 @@ void NodoBinario::InsertaBinario(Proveedor* o)
 			Hizq->InsertaBinario(o);
 			}
 	}else{
+		if(o->getCodigo() > valorP->getCodigo()){
 		if(Hder==NULL){
 			Hder = new NodoBinario(o);
 		}else{
 			Hder->InsertaBinario(o);
 
 		}
+	}
 	}
 	}
 	
@@ -578,6 +604,7 @@ void Binario::InsertaNodo(Proveedor* o)
 
 class nodo;
 class ArbolAVL;
+class ArbolAA;
 
 /////////////////ARBOL RN//////////////////////////
 enum Color {RED, BLACK};
@@ -603,16 +630,42 @@ class ArbolRN{
   nodo* InsertarNodoRN(nodo* RaizRN, nodo *pt);
   
   void InordenRN(nodo *R);
-  bool LeerCategorias(ArbolAVL AVL);
+  bool LeerCategorias(ArbolAVL &AVL);
 
  // void InordenRN(nodo *T);
   int ConsultarTransporteAux2(nodo*H, int idT, int bandera, int x);
+  
+  ArbolAA BuscarCategoria(nodo *ra, int _codP, int _codC, string _nomC, float _precio, int _stock);
 
 };
 
 
 //////////////FIN ARBOL RN////////////////////////
 
+/////////////////AA////////////////////
+class ArbolAA{
+
+public:
+    nodo* raiz;
+
+    ArbolAA():raiz(NULL){}
+
+   void lookup(int _codP, int _codC, string _nomC, float _precio, int _stock);
+   void skew(nodo  *temp);
+   bool split(nodo  *temp);
+   void rebal(nodo * temp);
+   nodo* insert(nodo * temp, nodo * ins);
+   void print(nodo*H);
+
+   void PreordenI(nodo *R);
+
+   int obtenerPrecioOferta(nodo *O,int r,int ci,int cd);
+   
+   bool LeerProductos(ArbolAVL &AVL);
+
+
+};
+////////////////FIN AA//////////////////////////////
 
 
 //////////////LISTA CIRCULAR DOBLE//////////////
@@ -704,6 +757,14 @@ class nodo {
 	    	valorPp = v;
 	    	siguiente = NULL;
 	    	anterior =NULL;
+	    	
+	    	level=0;
+		    count=0;
+		
+		    left = NULL;
+		    right = NULL;
+		    parent = NULL;
+		    root= NULL;
 	    	}
 		
 	   nodo(Producto* v, nodo * signodo)
@@ -748,17 +809,26 @@ class nodo {
 	    }
 		//Fin Constructor Factura
 		
-	Supermercado* valorS;
+		Supermercado* valorS;
 		Categoria* valorC;
 		
-	ArbolRN	arbol;	
+		ArbolRN	arbol;
+		ArbolAA	arbolaa;	
+	
+		nodo *left;
+        nodo *right;
+        nodo *parent;
+        nodo *root;
+
+        int count,level;
+        Producto* valorPp;
 	
 	
  private:
     int valor;
     Proveedor* valorP;
     //Categoria* valorC;
-    Producto* valorPp;
+    
     Cliente* valorCl;
     ItemFactura* valorF;
     //Supermercado* valorS;
@@ -802,7 +872,8 @@ class ArbolAVL{
 	
 
     void PreordenI(nodo *k);
-    ArbolRN BuscarSupermercado(nodo *ra, int _codeSuper);    
+    ArbolRN BuscarSupermercado(nodo *ra, int _codeSuper, int cod_c, string des_c);
+	ArbolRN BuscarSupermercado(nodo* ra, int _codeSuper);  
     void InsertarBalanceado(nodo *&ra, int _code, int _codLugar, string _name);
 
     bool Hh;
@@ -1018,55 +1089,154 @@ void ArbolAVL::PreordenI(nodo *R){
         PreordenI(R->Hder);
     }
 }
-/*
-//++++++++++++++++++++ inserciones de archivo+++++++++++++++++++++++++++++
-void ArbolAVL :: InsertaNodoTransporte(nodo *H,int idHotel, int idTransporte, int tipoT,string origen, string destino,string salida,string horaSalida ,string Llegada,string horaLlegada,string compannia ,int  plazas,int precio,int cantT){
-    if (H==NULL){
-        return;
-    }
-    else{
-        if (H->obtenerValor()==idHotel){
-            if (H->siguiente==NULL){
-                H->siguiente=new RNegro();
-            }
-        H->siguiente->insertarValorNodoRN(idTransporte,tipoT,origen, destino, salida, horaSalida, Llegada, horaLlegada,compannia, plazas, precio,  cantT  );
-        return;
-
-        }
-
-        else{
-            InsertaNodoTransporte(H->Hizq,idHotel, idTransporte,tipoT,origen, destino, salida, horaSalida, Llegada, horaLlegada,compannia, plazas, precio,  cantT );
-            InsertaNodoTransporte(H->Hder,idHotel, idTransporte,tipoT,origen, destino, salida, horaSalida, Llegada, horaLlegada,compannia, plazas, precio,  cantT );
-        }
-    }
-}
-void ArbolAVL:: InsertaNodoOferta(nodo *H,int idHotel, int  idOferta,int  precioInd,int precioDoble,int cantI,int  cantD){
-    if (H==NULL){
-        return;
-    }
-    else{
-        if (H->obtenerValor()==idHotel){
-            if (H->anterior==NULL){
-                H->anterior=new AA();
-            }
-        H->anterior->lookup( idOferta,  precioInd,  precioDoble,  cantI,  cantD);
-            return;
-        }
-        else{
-            InsertaNodoOferta(H->Hizq, idHotel,  idOferta,  precioInd,  precioDoble,  cantI,  cantD);
-            InsertaNodoOferta(H->Hder, idHotel,  idOferta,  precioInd,  precioDoble,  cantI,  cantD);
-        }
-    }
-}
-*/
-
-
-    
-
 
 
 /////////////////////FIN AVL//////////////////////////////////
 
+
+
+
+
+
+
+///////////////////ARBOL ArbolAA////////////////////////////////
+
+
+
+
+void ArbolAA::lookup(int _codP, int _codC, string _nomC, float _precio, int _stock)
+{
+	Producto *productoTemp = new Producto(_codP, _codC, _nomC, _precio, _stock);
+    nodo *temp = new nodo(productoTemp);
+    temp->level = 1;
+    temp->count = 0;
+    temp->left = NULL;
+    temp->right = NULL;
+    temp->parent = NULL;
+    temp=insert(raiz, temp);
+}
+
+void ArbolAA::skew(nodo  *temp)
+{
+    nodo *ptr = temp->left;
+    if (temp->parent->left == temp)
+        temp->parent->left = ptr;
+    else
+        temp->parent->right = ptr;
+    ptr->parent = temp->parent;
+    temp->parent = ptr;
+    temp->left = ptr->right;
+    if (temp->left != NULL)
+        temp->left->parent = temp;
+    ptr->right = temp;
+    temp->level = (temp->left ? temp->left->level + 1 : 1);
+}
+
+bool ArbolAA::split(nodo  *temp)
+{
+    nodo * ptr = temp->right;
+    if (ptr && ptr->right && (ptr->right->level == temp->level))
+    {
+        if (temp->parent->left == temp)
+            temp->parent->left = ptr;
+        else
+            temp->parent->right = ptr;
+        ptr->parent = temp->parent;
+        temp->parent = ptr;
+        temp->right = ptr->left;
+        if (temp->right != NULL)
+            temp->right->parent = temp;
+        ptr->left = temp;
+        ptr->level = temp->level + 1;
+        return true;
+    }
+    return false;
+}
+
+void ArbolAA::rebal(nodo * temp)
+{
+    temp->left = NULL;
+    temp->right = NULL;
+    temp->level = 1;
+    for (temp = temp->parent; temp != raiz; temp = temp->parent)
+    {
+        if (temp->level != (temp->left ? temp->left->level + 1 : 1 ))
+        {
+            skew(temp);
+            if (temp->right == NULL)
+                temp = temp->parent;
+            else if (temp->level != temp->right->level)
+                temp = temp->parent;
+        }
+        if (temp->parent != raiz)
+        {
+            if (split(temp->parent) == false)
+                break;
+        }
+    }
+}
+
+nodo* ArbolAA::insert(nodo * temp, nodo * ins)
+{
+    if (raiz == NULL)
+    {
+        ins->count = 1;
+        ins->parent = NULL;
+        ins->left = NULL;
+        ins->right = NULL;
+        raiz = ins;
+        return temp;
+    }
+    if (ins->valorPp->getCodProducto() < temp->valorPp->getCodProducto())
+    {
+        if (temp->left)
+            return insert(temp->left, ins);
+        temp->left = ins;
+        ins->parent = temp;
+        ins->count = 1;
+        rebal(ins);
+        return ins;
+    }
+    if (ins->valorPp->getCodProducto() > temp->valorPp->getCodProducto())
+    {
+        if (temp->right)
+            return insert(temp->right, ins);
+        temp->right = ins;
+        ins->parent = temp;
+        ins->count = 1;
+        rebal(ins);
+        return ins;
+    }
+    temp->count++;
+    delete ins;
+    return temp;
+}
+
+
+
+void ArbolAA::print(nodo* temp)
+{
+    if (!temp)
+        return;
+    print(temp->left);
+    cout <<"Value: "<<temp->valorPp->getCodProducto() << "  Count:" << temp->count;
+    cout<<"  Level: "<<temp->level<<endl;
+    print(temp->right);
+}
+
+void ArbolAA::PreordenI(nodo *R){
+    if(R==NULL){
+        return;
+    }else{
+        cout<<"Codigo: "<<R->valorPp->getCodProducto()<<endl;
+        cout<<"Nombre: "<<R->valorPp->getNombre()<<endl;
+        
+        PreordenI(R->left);
+        PreordenI(R->right);
+    }
+}
+
+//////////////////////////////////////////////////////////
 //////////////////ARBOL B//////////////////////
 class ArregloClaves
 {
@@ -1256,9 +1426,11 @@ ApuntadorPagina ArbolB::InsertarB(ApuntadorPagina Raiz, int Numero, int _id, str
     ApuntadorPagina P = NULL;
 
     Raiz = EmpujarB(Raiz,Numero,  _id,  _nombre,  _direccion,  _telefono);
+    if (Raiz!=NULL){
     if	(Raiz->Esta){
     	Raiz->Esta= false;
     	return Raiz;
+	}
 	}
     if(Raiz->EmpujarArriba == true){
         P = new Pagina();
@@ -2008,7 +2180,7 @@ void ArbolRN ::aplicarReglas(nodo *&RaizRN, nodo *&pt){
 
 
 
-ArbolRN ArbolAVL::BuscarSupermercado(nodo *ra, int _codeSuper){
+ArbolRN ArbolAVL::BuscarSupermercado(nodo *ra, int _codeSuper, int cod_c, string des_c){
    // nodo *n1;
 	ArbolRN n;
     if(ra==NULL){
@@ -2020,7 +2192,31 @@ ArbolRN ArbolAVL::BuscarSupermercado(nodo *ra, int _codeSuper){
         	//cout<<"Ahi esta"<<endl;
         //	ra->valorS->arbol->insertarValorNodoRN(45, "Verduras");
         	//arbolS = ra->valorS->arbol;
+			ra->arbol.insertarValorNodoRN(cod_c, des_c);
+        	return ra->arbol;
+        }
 
+		if (_codeSuper<ra->valorS->getCodigo()){
+			return BuscarSupermercado(ra->Hizq, _codeSuper, cod_c, des_c);
+			
+		
+        }else{
+            if(_codeSuper > ra->valorS->getCodigo()){
+                return BuscarSupermercado(ra->Hder, _codeSuper, cod_c, des_c);
+               }
+         }
+   }
+}
+
+
+ArbolRN ArbolAVL::BuscarSupermercado(nodo *ra, int _codeSuper){
+	ArbolRN n;
+    if(ra==NULL){
+    	cout<<"No existe tampoco"<<endl;
+    	return n;
+    }else{
+       
+        if(_codeSuper==ra->valorS->getCodigo()){
         	return ra->arbol;
         }
 
@@ -2035,6 +2231,34 @@ ArbolRN ArbolAVL::BuscarSupermercado(nodo *ra, int _codeSuper){
          }
    }
 }
+
+ArbolAA ArbolRN::BuscarCategoria(nodo *ra, int _codP, int _codC, string _nomC, float _precio, int _stock){
+		   // nodo *n1;
+	ArbolAA n;
+    if(ra==NULL){
+    	cout<<"No existe la categoria, I guess"<<endl;
+    	return n;
+    }else{
+       
+        if(_codC==ra->valorC->getCodigo()){
+			ra->arbolaa.lookup(_codP, _codC, _nomC, _precio, _stock);
+        	return ra->arbolaa;
+        }
+
+		if (_codC<ra->valorC->getCodigo()){
+			return BuscarCategoria(ra->Hizq, _codP, _codC, _nomC, _precio, _stock);
+			
+		
+        }else{
+            if(_codC > ra->valorC->getCodigo()){
+                return BuscarCategoria(ra->Hder, _codP, _codC, _nomC, _precio, _stock);
+               }
+         }
+   }
+}
+
+
+
 
 void ArbolRN ::insertarValorNodoRN(int _code, string _descripcion){
 	Categoria * c = new Categoria(_code, _descripcion);
@@ -2674,7 +2898,7 @@ bool ArbolAVL:: LeerSupermercados() { //Leer Supermercados
 	return false;
 }
 
-bool ArbolRN:: LeerCategorias(ArbolAVL AVL) { //Leer Categorías
+bool ArbolRN:: LeerCategorias(ArbolAVL &AVL) { //Leer Categorías
 
 	string cod_c;
 	string des_c;
@@ -2730,12 +2954,11 @@ bool ArbolRN:: LeerCategorias(ArbolAVL AVL) { //Leer Categorías
 				int_cod = RetornarEntero(cod_c);
 				int_cod_sup = RetornarEntero(cod_sup);
 				
-				ArbolRN arbolTemp = AVL.BuscarSupermercado(AVL.raiz, int_cod_sup);
+				ArbolRN arbolTemp = AVL.BuscarSupermercado(AVL.raiz, int_cod_sup, int_cod, des_c);
 
 				arbolTemp.insertarValorNodoRN(int_cod, des_c);
-	
 				
-				insertarValorNodoRN(int_cod, des_c);	
+				//insertarValorNodoRN(int_cod, des_c);	
 			//	Categoria * o = new Categoria(int_cod, des_c);
 				
 			//	InsertarInicio(o);
@@ -2763,9 +2986,10 @@ bool ArbolRN:: LeerCategorias(ArbolAVL AVL) { //Leer Categorías
   	if (VerificarEntero(cod_c))
 	  	{
 		int_cod = RetornarEntero(cod_c);
-		insertarValorNodoRN(int_cod, des_c);
-		//Categoria * o = new Categoria(int_cod, des_c);	
-		//InsertarInicio(o);
+		
+		ArbolRN arbolTemp = AVL.BuscarSupermercado(AVL.raiz, int_cod_sup, int_cod, des_c);
+
+		arbolTemp.insertarValorNodoRN(int_cod, des_c);
 		return true;
 		}
 	cout<<"*********Error en las categorias*********"<<endl;
@@ -2773,18 +2997,20 @@ bool ArbolRN:: LeerCategorias(ArbolAVL AVL) { //Leer Categorías
 }
 
 
-bool listaDC:: LeerProductos() { //Leer Productos
+bool ArbolAA:: LeerProductos(ArbolAVL &AVL) { //Leer Productos
 	
 	string CodProducto;
 	string CodCategoria;
 	string Nombre;
 	string PrecioUnit;
 	string CantidadStock;
+	string CodigoSuper;
 	
 	int int_cod;
 	int int_cat;
 	float int_precio;
 	int int_stock;
+	int int_cod_sup;
 
   	int cont = 1;
 
@@ -2794,7 +3020,7 @@ bool listaDC:: LeerProductos() { //Leer Productos
 	string l;
 	while (is.get(c))          // loop getting single characters
 		{
-		if (cont <= 5 )
+		if (cont <= 6 )
 			{
 			if (c != ';')
 		    	{
@@ -2813,15 +3039,17 @@ bool listaDC:: LeerProductos() { //Leer Productos
 				{
 				switch (cont)
 					{
-					case 1: CodProducto = l;
+					case 1: CodigoSuper = l;
 					break;
 					case 2: CodCategoria = l;
 					break;
-					case 3: Nombre = l;
+					case 3: CodProducto = l;
 					break;
-					case 4: PrecioUnit = l;
+					case 4: Nombre = l;
 					break;
-					case 5: CantidadStock = l;
+					case 5: PrecioUnit = l;
+					break;
+					case 6: CantidadStock = l;
 					break;
 					}
 				cont++;	
@@ -2836,10 +3064,16 @@ bool listaDC:: LeerProductos() { //Leer Productos
 				int_cat = RetornarEntero(CodCategoria);
 				int_precio = RetornarEntero(PrecioUnit);
 				int_stock = RetornarEntero(CantidadStock);
-						
-				Producto * o = new Producto(int_cod, int_cat, Nombre, int_precio, int_stock); 
+				int_cod_sup = RetornarEntero(CodigoSuper);
 				
-				InsertarInicio(o);
+				//cout<<"Codigo del super: "<<int_cod_sup<<endl;
+				ArbolRN ROJONEGRO = AVL.BuscarSupermercado(AVL.raiz, int_cod_sup);
+	
+				ArbolAA DOBLEA = ROJONEGRO.BuscarCategoria(ROJONEGRO.raiz, int_cod, int_cat, Nombre, int_precio, int_stock);
+	
+				cout<<endl<<"Products: "<<endl;
+				DOBLEA.PreordenI(DOBLEA.raiz);
+				cout<<endl<<"Fin Products"<<endl;	
 		
 				
 				l = c;
@@ -2869,8 +3103,13 @@ bool listaDC:: LeerProductos() { //Leer Productos
 		int_cat = RetornarEntero(CodCategoria);
 		int_precio = RetornarEntero(PrecioUnit);
 		int_stock = RetornarEntero(CantidadStock);
-		Producto * o = new Producto(int_cod, int_cat, Nombre, int_precio, int_stock); 
-		InsertarInicio(o);
+		
+		ArbolRN ROJONEGRO = AVL.BuscarSupermercado(AVL.raiz, int_cod_sup);
+		ArbolAA DOBLEA = ROJONEGRO.BuscarCategoria(ROJONEGRO.raiz, int_cod, int_cat, Nombre, int_precio, int_stock);
+		cout<<"Products: "<<endl;
+		DOBLEA.PreordenI(DOBLEA.raiz);
+		cout<<endl<<"Fin Products"<<endl;
+		
 		return true;
 	  	}
 	cout<<"*********Error en los productos*********"<<endl;
@@ -3014,10 +3253,10 @@ bool listaDC:: VerificarCodUnico(int cod)
 	return true;
 	}
 
-
-bool listaDC::VerificarProveedor(int cod) //Verifica que el proveedor exista
+/*
+bool Binario::VerificarProveedor(int cod) //Verifica que el proveedor exista
 	{
-	pnodo aux = primero;
+	NodoBinario* aux = RetornarRaiz();
 	int temp;
 	
 	if ((aux->valorP)->getCodigo() == cod)
@@ -3025,9 +3264,15 @@ bool listaDC::VerificarProveedor(int cod) //Verifica que el proveedor exista
 			(aux->valorP)->sumarCont();
 		return true;
 		}
-	aux = aux->siguiente;
-	
-	while (aux != primero)
+		
+	if ((aux->valorP)->getCodigo() < cod){
+		aux = aux->Hizq;
+		
+	}else{
+	aux = aux->Hder;
+	}
+
+	while (aux != NULL)
 		{
 		temp = (aux->valorP)->getCodigo();
 		
@@ -3039,13 +3284,18 @@ bool listaDC::VerificarProveedor(int cod) //Verifica que el proveedor exista
 			}
 		else
 			{
-			aux=aux->siguiente;
+			if (temp<cod){
+				aux=aux->Hizq;
+			}
+			else{
+				aux=aux->Hder;
+			}
 			}
 		}
 	cout<<"************************ ¡Proveedor invalido! ************************\n"<<endl;
 	return false;
 	}
-	
+*/	
 bool listaDC::VerificarProducto(string prod) //Verifica que el producto exista
 	{
 	pnodo aux = primero;
@@ -3625,7 +3875,7 @@ int main()
 	string cant_input;
 	int precio;
 	char yes_no;
-	
+	/*
 	listaDC Items;
 	Binario ListaProveedores;
 
@@ -3641,86 +3891,21 @@ int main()
 	ListaProveedores.PostordenR(r);
 	ListaProveedores.PreordenR(r);
 	
+	*/
 	
-	
-	
+	Binario BBB;
 	ArbolB B;
-	
-	
-//	B.LeerClientes();
-
-
-	B.IniciarInsercionB(89,89,"Roberto","Heredia", "86582179");
-	
-	B.IniciarInsercionB(100,100,"Juan","Heredia", "86582179");
-	B.IniciarInsercionB(101,101,"Daniel","Paraiso", "86582179");
-	B.IniciarInsercionB(105,105,"Sergio","Alajuela", "86582232");
-	B.IniciarInsercionB(11,11,"Amy","Tres Rios", "86582232");
-	
-	
-	//cout<<"AAAAASFFFFFFFFFFFFFFFFFFFFFF: " <<B.raizB->Claves->ObtenerValor()<<endl;
-	
-	
-//	B.Eliminar(89, B.raizB);
-	
-	B.RecorridoInordenB(B.raizB);
-	
-//	cout<<"BARRA SEPARADORA"<<endl;
-	
-	
 	ArbolAVL AVL;
-	AVL.LeerSupermercados();
-	
+	ArbolAA AA;
 	ArbolRN RN;
-	RN.LeerCategorias(AVL);
-	/*
-	RN.insertarValorNodoRN(45, "Verduras");
-	RN.insertarValorNodoRN(44, "Joyas");
-	RN.insertarValorNodoRN(38, "Arroz");
-	nodo * cat = RN.raiz;
-	*/
+	B.LeerClientes();
+		B.RecorridoInordenB(B.raizB);
 	
 	
-	RN.InordenRN(RN.raiz);
-	
-	
-	
-	
-	
-	
-	AVL.InsertaNodoAVL(87, 87, "MaxiPali");
-/*	AVL.InsertaNodoAVL(85, 89, "Palí");
-	AVL.InsertaNodoAVL(89, 89, "HiperMáx");
-	AVL.InsertaNodoAVL(98, 89, "Fresnos");
-	AVL.InsertaNodoAVL(77, 89, "MasXMenos");
-	AVL.InsertaNodoAVL(72, 89, "AA");
-	AVL.InsertaNodoAVL(12, 89, "Menos");
-	AVL.InsertaNodoAVL(37, 89, "AutoMercado");
-	*/
-	
-//	
-	
-	AVL.PreordenI(AVL.raiz);
-//	ArbolRN * hola = new ArbolRN();
-	
-	
-
-
-	
-	
-//	aa.insertarValorNodoRN(45, "Verduras");
-/*	
-ArbolRN * hola2 = new ArbolRN();	
-ArbolRN * jeje = AVL.BuscarSupermercado(AVL.raiz, hola2, 87);
-
-jeje->InordenRN(hola2->raiz);
-
-*/	
-	
-	/*
-	if (ListaProveedores.LeerProveedores() && ListaClientes.LeerClientes() && ListaCategorias.LeerCategorias() && ListaProductos.LeerProductos())
+	if (BBB.LeerProveedores() && AVL.LeerSupermercados())
 		{
-			
+			//B.LeerClientes() && RN.LeerCategorias() && ListaProductos.LeerProductos()
+			/*
 		if (ListaProveedores.RevisarCod())
 			{
 			cout<<endl<<"************************ERROR************************"<<endl<<"No se aceptan codigos repetidos en los proveedores"<<endl;
@@ -3732,12 +3917,12 @@ jeje->InordenRN(hola2->raiz);
 		if (ListaCategorias.RevisarCodCategoria()){
 			cout<<"Error"<<endl;
 			return 0;
-		}
+		}*/
 		while (true)
 			{
-			ListaProveedores.MostrarProveedores();
+			BBB.PreordenR(BBB.RetornarRaiz());
 			
-			cout<<"Ingrese el codigo del proveedor: "; 
+			cout<<endl<<endl<<"Ingrese el codigo del proveedor: "; 
 			std::getline(std::cin,cod_input);
 			try{
 				cod_input_int = std::stoi(cod_input);
@@ -3749,15 +3934,15 @@ jeje->InordenRN(hola2->raiz);
 			
 	
 	
-			if (ListaProveedores.VerificarProveedor(cod_input_int))
+			if (BBB.VerificarProveedor(BBB.RetornarRaiz(),cod_input_int))
 				{
 				cout<<"------------------------ Clientes regulares: ------------------------"<<endl;
 				
-				ListaClientes.MostrarClientes();
+			
 				
 				cout<<"\nIngrese el nombre completo del cliente: ";
 				std::getline(std::cin,nom_input);
-				if (ListaClientes.VerificarCliente(nom_input)){
+			/*	if (ListaClientes.VerificarCliente(nom_input)){
 					Desc = true;
 				}
 				
@@ -3769,7 +3954,7 @@ jeje->InordenRN(hola2->raiz);
 				cout<<"\nIngrese el nombre de la categoria: ";
 				std::getline(std::cin,cat_input);
 				
-				if (ListaCategorias.VerificarCategoria(cat_input)){
+				if (ListaCategorias.VerificarCategoria(c000000000000000at_input)){
 					cout<<"------------------------  Productos disponibles en esta categoria: ------------------------"<<endl;//CORRER ESTO PARA ARRIBA
 					if (ListaProductos.MostrarProductos(cat_input, ListaCategorias))
 						{
@@ -3839,6 +4024,7 @@ jeje->InordenRN(hola2->raiz);
 						{
 						break;
 						}
+						*/
 						
 				}
 			
@@ -3847,7 +4033,7 @@ jeje->InordenRN(hola2->raiz);
 			cin.sync();
 			cod_input="";
 			}
-		
+		/*
 		cout<<"||||||||||||||||||||||||||||||||||| Resumen del dia ||||||||||||||||||||||||||||||||||||||"<<endl;
 		cout<<"Proveedor que mas vendio: ";
 		ListaProveedores.ProveedorMayoresVentas();
@@ -3865,9 +4051,10 @@ jeje->InordenRN(hola2->raiz);
 		
 		
 		Items.ImprimirFactura();
+		*/
 		}
 	else{
 		return 0;
 	}
-*/
+
 	}
