@@ -1480,7 +1480,7 @@ ApuntadorPagina ArbolB::InsertarB(ApuntadorPagina Raiz, int Numero, int _id, str
         P = new Pagina();
         P->cuenta = 1;
         int	int_tel = stoi(_telefono);
-        Cliente *clienteTemp = new Cliente(_id, _nombre, _direccion, int_tel);
+        Cliente *clienteTemp = new Cliente(Raiz->X, _nombre, _direccion, int_tel);
 		 
         nodo* Auxiliar = new nodo(clienteTemp);
         P->Claves->InsertarClave(Auxiliar,1);
@@ -1513,8 +1513,9 @@ ApuntadorPagina ArbolB::EmpujarB(ApuntadorPagina Raiz, int Numero, int _id, stri
     else{
         Raiz = BuscarNodoB(Raiz,Numero);
         if(Raiz->Esta){
-            cout << "Elemento Repetido" << endl;
-            return Raiz;
+            std::cout << "Elemento Repetido" << std::endl;
+          	return Raiz;
+
         }
         if(Raiz->K == 0){
 
@@ -1524,12 +1525,12 @@ ApuntadorPagina ArbolB::EmpujarB(ApuntadorPagina Raiz, int Numero, int _id, stri
         Raiz->EmpujarArriba = Aux->EmpujarArriba;
         Raiz->X = Aux -> X;
         Raiz->Xr = Aux->Xr;
-        if(Raiz->EmpujarArriba ==  true){
+        if(Raiz->EmpujarArriba){
             if(Raiz->cuenta < 4){
                 Raiz->EmpujarArriba = false;
                 Raiz = MeterHojaB(Raiz,  _id,  _nombre,  _direccion,  _telefono);
             }
-        }
+	}
         else{
             Raiz->EmpujarArriba = true;
             Raiz = DividirNodoB(Raiz,  _id,  _nombre,  _direccion,  _telefono);
@@ -1570,7 +1571,7 @@ ApuntadorPagina ArbolB::MeterHojaB(ApuntadorPagina Raiz, int _id, string _nombre
         I--;
     }
     int	int_tel = stoi(_telefono);
-    Cliente *clienteTemp2 = new Cliente(_id, _nombre, _direccion, int_tel);
+    Cliente *clienteTemp2 = new Cliente(Raiz->X, _nombre, _direccion, int_tel);
 		 
     nodo* X = new nodo(clienteTemp2);
         
@@ -1587,6 +1588,14 @@ ApuntadorPagina ArbolB::MeterHojaB(ApuntadorPagina Raiz, int _id, string _nombre
 
 ApuntadorPagina ArbolB::DividirNodoB(ApuntadorPagina Raiz, int _id, string _nombre, string _direccion, string _telefono)
 {
+	cout<<"POR ACA NUNCA PASO, CHE"<<endl;
+	cout<<"POR ACA NUNCA PASO, CHE"<<endl;
+	cout<<"POR ACA NUNCA PASO, CHE"<<endl;
+	cout<<"POR ACA NUNCA PASO, CHE"<<endl;
+	cout<<"POR ACA NUNCA PASO, CHE"<<endl;
+	cout<<"POR ACA NUNCA PASO, CHE"<<endl;
+	cout<<"POR ACA NUNCA PASO, CHE"<<endl;
+	
     int I;
     int Posmda;
     ApuntadorPagina Mder;
@@ -1637,19 +1646,19 @@ void ArbolB::RecorridoInordenB(ApuntadorPagina Raiz){
         return;
     }
     else{
-        RecorridoInordenB(Raiz->Ramas->ObtenerRama(0));
+        //RecorridoInordenB(Raiz->Ramas->ObtenerRama(0));
         int I = 1;
         while(I <= Raiz->cuenta){
             nodo* Recorrido = Raiz->Claves->ObtenerApuntadorClave(I);
 
-            cout<< "idCliente: "<< Recorrido->valorCl->getCedula() << endl;
+          cout<< "idCliente: "<< Recorrido->valorCl->getCedula() << endl;
             cout << "Nombre: " << Recorrido->valorCl->getNombre()<< endl;
             //cout << "Cantidad de Compras: " << Recorrido->valorCl-><< endl;
             cout << "Ciudad: " << Recorrido->valorCl->getDireccion()<< endl;
             cout << "Telefono: " << Recorrido->valorCl->getTelefono() << endl;
             cout << "\n" << endl;
 
-            RecorridoInordenB(Raiz->Ramas->ObtenerRama(I));
+            RecorridoInordenB(Raiz->Ramas->ObtenerRama(I-1));
 
             I++;
         }
@@ -1765,7 +1774,7 @@ int PilaB::Size(){
     return cont;
 }
 
-/*
+
 void ArbolB::BuscarNodo(int Clave, ApuntadorPagina P, bool & Encontrado, int & K)
 {
 // Este método examina la pagina referenciada por P. De no //encontrarse el valor nuevo, K será el índice de la rama por //donde bajar
@@ -2058,7 +2067,7 @@ void ArbolB::Combina(ApuntadorPagina P, int& K)
 }  
 
 //////////////////FIN ARBOL B//////////////////////
-*/
+
 
 
 
@@ -3984,7 +3993,21 @@ int main()
 	ArbolRN RN;
 	
 	
+	B.LeerClientes();
+	/*
+	B.IniciarInsercionB(89, 89, "Robs", "asas", "78452145");
+	B.IniciarInsercionB(100, 100, "Robs", "asas", "78452145");
+	B.IniciarInsercionB(101, 101, "Robs", "asas", "78452145");
+	B.IniciarInsercionB(102, 102, "Robs", "asas", "78452145");
+	B.IniciarInsercionB(11, 11, "Robs", "asas", "78452145");*/
+
+	cout<<"RAIZ: "<<B.raizB->Claves->ObtenerClave(1);
+
+	B.IniciarRecorridoB();
 	
+	//B.Eliminar(11, B.raizB);
+	
+	/*
 	if (BBB.LeerProveedores() && AVL.LeerSupermercados() && B.LeerClientes())
 		{
 			RN.LeerCategorias(AVL);
@@ -4002,7 +4025,7 @@ int main()
 		if (ListaCategorias.RevisarCodCategoria()){
 			cout<<"Error"<<endl;
 			return 0;
-		}*/
+		}*
 		while (true)
 			{
 			BBB.PreordenR(BBB.RetornarRaiz());
@@ -4160,7 +4183,7 @@ int main()
 						{
 						break;
 						}
-						*/
+						*
 						
 				}
 			
@@ -4187,10 +4210,10 @@ int main()
 		
 		
 		Items.ImprimirFactura();
-		*/
+		*
 		}
 	else{
 		return 0;
-	}
+	}*/
 
 	}
