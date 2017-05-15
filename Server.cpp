@@ -17,12 +17,13 @@ int main()
  
     serverAddr.sin_addr.s_addr = INADDR_ANY;
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(5555);
+    serverAddr.sin_port = htons(1986);
  
     bind(server, (SOCKADDR *)&serverAddr, sizeof(serverAddr));
     listen(server, 0);
  
     cout << "Listening for incoming connections..." << endl;
+ while (true){
  
     char buffer[1024];
     int clientAddrSize = sizeof(clientAddr);
@@ -30,10 +31,13 @@ int main()
     {
         cout << "Client connected!" << endl;
         recv(client, buffer, sizeof(buffer), 0);
+        
+	
         cout << "Client says: " << buffer << endl;
         memset(buffer, 0, sizeof(buffer));
- 
-        closesocket(client);
-        cout << "Client disconnected." << endl;
+ 	
+       // closesocket(client);
+        //cout << "Client disconnected." << endl;
+    }
     }
 }
