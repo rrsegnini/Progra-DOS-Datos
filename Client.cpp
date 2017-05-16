@@ -28,7 +28,7 @@ int main()
  	const char *msg_char;
  	char buffer[1024];
  	
- 	cout<<"Presione ENTER para realizar una compra"<<endl;
+ 	cout<<"Presione ENTER para realizar una compra "<<endl;
  for (;;){
 	
 	recv(server, buffer, sizeof(buffer), 0);
