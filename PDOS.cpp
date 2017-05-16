@@ -3942,7 +3942,7 @@ void listaDC::ImprimirFactura(){
 	myfile.close();	
 		}
 
-
+/*
 int main()
 	{
 
@@ -3968,7 +3968,7 @@ int main()
 	int int_super_input;
 	int int_cat_input;
 	int int_pro_input;
-	/*
+	
 	listaDC Items;
 	Binario ListaProveedores;
 
@@ -3984,7 +3984,7 @@ int main()
 	ListaProveedores.PostordenR(r);
 	ListaProveedores.PreordenR(r);
 	
-	*/
+	
 	
 	Binario BBB;
 	ArbolB B;
@@ -3994,38 +3994,22 @@ int main()
 	
 	
 	B.LeerClientes();
-	/*
-	B.IniciarInsercionB(89, 89, "Robs", "asas", "78452145");
-	B.IniciarInsercionB(100, 100, "Robs", "asas", "78452145");
-	B.IniciarInsercionB(101, 101, "Robs", "asas", "78452145");
-	B.IniciarInsercionB(102, 102, "Robs", "asas", "78452145");
-	B.IniciarInsercionB(11, 11, "Robs", "asas", "78452145");*/
 
-	cout<<"RAIZ: "<<B.raizB->Claves->ObtenerClave(1);
 
-	B.IniciarRecorridoB();
+	//cout<<"RAIZ: "<<B.raizB->Claves->ObtenerClave(1);
+
+//	B.IniciarRecorridoB();
 	
 	//B.Eliminar(11, B.raizB);
 	
-	/*
+	
 	if (BBB.LeerProveedores() && AVL.LeerSupermercados() && B.LeerClientes())
 		{
 			RN.LeerCategorias(AVL);
 			AA.LeerProductos(AVL);
 			//B.LeerClientes() && RN.LeerCategorias() && ListaProductos.LeerProductos()
-			/*
-		if (ListaProveedores.RevisarCod())
-			{
-			cout<<endl<<"************************ERROR************************"<<endl<<"No se aceptan codigos repetidos en los proveedores"<<endl;
-			cout<<"Revise el archivo de texto con los proveedores"<<endl<<"**Ningun codigo puede estar repetido**"<<endl;
 			
-			return 0;
-			}
-		
-		if (ListaCategorias.RevisarCodCategoria()){
-			cout<<"Error"<<endl;
-			return 0;
-		}*
+
 		while (true)
 			{
 			BBB.PreordenR(BBB.RetornarRaiz());
@@ -4156,7 +4140,7 @@ int main()
 				//break;
 				}
 				
-				/*
+				
 				cod_categoria = ListaCategorias.MostrarCodigoCategoria(cat_input);
 				precio = ListaProductos.MostrarPrecio(pro_input);
 										
@@ -4183,8 +4167,8 @@ int main()
 						{
 						break;
 						}
-						*
 						
+					
 				}
 			
 				
@@ -4210,10 +4194,10 @@ int main()
 		
 		
 		Items.ImprimirFactura();
-		*
+		
 		}
 	else{
 		return 0;
-	}*/
-
 	}
+
+	}*/

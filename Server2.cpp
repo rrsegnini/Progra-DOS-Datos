@@ -1,7 +1,66 @@
 #include <iostream>
 #include <winsock2.h>
 #pragma comment(lib,"ws2_32.lib")
+
+
+#include <iostream>
+#include <winsock2.h>
+ 
+using namespace std;
+ 
+int main()
+{
+    WSADATA WSAData;
+ 
+    SOCKET server, client;
+ 	SOCKET Socket=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
+ 	
+    SOCKADDR_IN serverAddr, clientAddr;
+ 
+    WSAStartup(MAKEWORD(2,0), &WSAData);
+    server = socket(AF_INET, SOCK_STREAM, 0);
+ 
+    serverAddr.sin_addr.s_addr = INADDR_ANY;
+    serverAddr.sin_family = AF_INET;
+    serverAddr.sin_port = htons(1986);
+ 
+    bind(server, (SOCKADDR *)&serverAddr, sizeof(serverAddr));
+    listen(server, 0);
+ 
+    cout << "Listening for incoming connections..." << endl;
+ //while (true){
+ 
+    char buffer[1024];
+    int clientAddrSize = sizeof(clientAddr);
+    if((client = accept(server, (SOCKADDR *)&clientAddr, &clientAddrSize)) != INVALID_SOCKET)
+    {
+        cout << "Client connected!" << endl;
+        recv(client, buffer, sizeof(buffer), 0);
+        
+	
+        // Main loop
+	for(;;)
+	{
+		char *szMessage="Welcome to the server!\r\n";
+		send(Socket,szMessage,strlen(szMessage),0);
 					
+		int nError=WSAGetLastError();
+			
+		Sleep(1000);
+	}
+
+	WSACleanup();
+	system("PAUSE");
+	return 0;
+ 	
+        closesocket(client);
+        cout << "Client disconnected." << endl;
+    }
+   }
+
+
+
+	/*				
 int main()
 {
 	WSADATA WsaDat;
@@ -25,7 +84,7 @@ int main()
 	SOCKADDR_IN serverInf;
 	serverInf.sin_family=AF_INET;
 	serverInf.sin_addr.s_addr=INADDR_ANY;
-	serverInf.sin_port=htons(8888);
+	serverInf.sin_port=htons(1986);
 					
 	if(bind(Socket,(SOCKADDR*)(&serverInf),sizeof(serverInf))==SOCKET_ERROR)
 	{
@@ -78,4 +137,4 @@ int main()
 	WSACleanup();
 	system("PAUSE");
 	return 0;
-}
+}*/
