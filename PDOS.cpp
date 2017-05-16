@@ -671,6 +671,11 @@ public:
    bool VerificarProducto(nodo *R, int cod);
    
     int VerificarStock(nodo *R, int cod);
+    
+    void ReducirStock(nodo *R, int cod, int redux);
+    
+    int MostrarPrecio(nodo *R, int cod);
+
 
 
 };
@@ -895,6 +900,7 @@ class ArbolAVL{
     void RotacionSimpleIzquierda(nodo *&n1, nodo *&n2);
     void RotacionSimpleDerecha(nodo *&n1, nodo *&n2);
     
+    bool VerificarSupermercado(nodo *ra, int _codeSuper);
     bool LeerSupermercados();
 
     //++++++++++++++++++Inserciones +++++++++++++++++++++++++++++++++++++++++
@@ -1263,6 +1269,41 @@ bool ArbolAA::VerificarProducto(nodo *R, int cod){
     }
 }
 
+
+int ArbolAA::MostrarPrecio(nodo *R, int cod){
+    if(R==NULL){
+    	cout<<"Producto invalido"<<endl;
+        return false;
+    }else{
+    	if (R->valorPp->getCodProducto()==cod){
+    		return R->valorPp->getPrecioUnit();
+		}
+    	if (R->valorPp->getCodProducto()<cod){
+    		return MostrarPrecio(R->right, cod);
+		}
+    
+        return MostrarPrecio(R->left, cod);
+        
+    }
+}
+
+void ArbolAA::ReducirStock(nodo *R, int cod, int redux){
+    if(R==NULL){
+    	cout<<"Producto invalido"<<endl;
+        return;
+    }else{
+    	if (R->valorPp->getCodProducto()==cod){
+    		return R->valorPp->reducirStock(redux);
+		}
+    	if (R->valorPp->getCodProducto()<cod){
+    		return ReducirStock(R->right, cod, redux);
+		}
+    
+        return ReducirStock(R->left, cod, redux);
+        
+    }
+}
+
 int ArbolAA::VerificarStock(nodo *R, int cod){
     if(R==NULL){
     	cout<<"Producto invalido"<<endl;
@@ -1408,11 +1449,11 @@ public:
     bool BVacio(){return raizB == NULL;}
     void EstablecerRaizB(ApuntadorPagina Raiz);
     void IniciarInsercionB(int Numero, int _id, string _nombre, string _direccion, string _telefono);
-    ApuntadorPagina InsertarB(ApuntadorPagina Raiz, int Numero,  int _id, string _nombre, string _direccion, string _telefono);
+    ApuntadorPagina InsertarB(ApuntadorPagina &Raiz, int Numero,  int _id, string _nombre, string _direccion, string _telefono);
     ApuntadorPagina EmpujarB(ApuntadorPagina Raiz, int Numero, int _id, string _nombre, string _direccion, string _telefono);
-    ApuntadorPagina BuscarNodoB(ApuntadorPagina Raiz, int Numero);
-    ApuntadorPagina MeterHojaB(ApuntadorPagina Raiz, int _id, string _nombre, string _direccion, string _telefono);
-    ApuntadorPagina DividirNodoB(ApuntadorPagina Raiz,  int _id, string _nombre, string _direccion, string _telefono);
+    ApuntadorPagina BuscarNodoB(ApuntadorPagina &Raiz, int Numero);
+    ApuntadorPagina MeterHojaB(ApuntadorPagina &Raiz, int _id, string _nombre, string _direccion, string _telefono);
+    ApuntadorPagina DividirNodoB(ApuntadorPagina &Raiz,  int _id, string _nombre, string _direccion, string _telefono);
     void IniciarRecorridoB();
     void RecorridoInordenB(ApuntadorPagina Raiz);
     bool existeCliente(ApuntadorPagina Raiz,int _Numero);
@@ -1467,7 +1508,7 @@ void ArbolB::IniciarInsercionB(int Numero, int _id, string _nombre, string _dire
 //	}
 }
 
-ApuntadorPagina ArbolB::InsertarB(ApuntadorPagina Raiz, int Numero, int _id, string _nombre, string _direccion, string _telefono)
+ApuntadorPagina ArbolB::InsertarB(ApuntadorPagina& Raiz, int Numero, int _id, string _nombre, string _direccion, string _telefono)
 {
     ApuntadorPagina P = NULL;
 
@@ -1513,7 +1554,7 @@ ApuntadorPagina ArbolB::EmpujarB(ApuntadorPagina Raiz, int Numero, int _id, stri
     else{
         Raiz = BuscarNodoB(Raiz,Numero);
         if(Raiz->Esta){
-            std::cout << "Elemento Repetido" << std::endl;
+           // std::cout << "Elemento Repetido" << std::endl;
           	return Raiz;
 
         }
@@ -1541,7 +1582,7 @@ ApuntadorPagina ArbolB::EmpujarB(ApuntadorPagina Raiz, int Numero, int _id, stri
     }
 }
 
-ApuntadorPagina ArbolB::BuscarNodoB(ApuntadorPagina Raiz, int Numero)
+ApuntadorPagina ArbolB::BuscarNodoB(ApuntadorPagina& Raiz, int Numero)
 {
     int PClave1 = Raiz->Claves->ObtenerClave(1);
     if(Numero < PClave1){
@@ -1561,7 +1602,7 @@ ApuntadorPagina ArbolB::BuscarNodoB(ApuntadorPagina Raiz, int Numero)
     return Raiz;
 }
 
-ApuntadorPagina ArbolB::MeterHojaB(ApuntadorPagina Raiz, int _id, string _nombre, string _direccion, string _telefono)
+ApuntadorPagina ArbolB::MeterHojaB(ApuntadorPagina& Raiz, int _id, string _nombre, string _direccion, string _telefono)
 {
     int I;
     I = Raiz->cuenta;
@@ -1586,16 +1627,9 @@ ApuntadorPagina ArbolB::MeterHojaB(ApuntadorPagina Raiz, int _id, string _nombre
 
 }
 
-ApuntadorPagina ArbolB::DividirNodoB(ApuntadorPagina Raiz, int _id, string _nombre, string _direccion, string _telefono)
+ApuntadorPagina ArbolB::DividirNodoB(ApuntadorPagina& Raiz, int _id, string _nombre, string _direccion, string _telefono)
 {
-	cout<<"POR ACA NUNCA PASO, CHE"<<endl;
-	cout<<"POR ACA NUNCA PASO, CHE"<<endl;
-	cout<<"POR ACA NUNCA PASO, CHE"<<endl;
-	cout<<"POR ACA NUNCA PASO, CHE"<<endl;
-	cout<<"POR ACA NUNCA PASO, CHE"<<endl;
-	cout<<"POR ACA NUNCA PASO, CHE"<<endl;
-	cout<<"POR ACA NUNCA PASO, CHE"<<endl;
-	
+
     int I;
     int Posmda;
     ApuntadorPagina Mder;
@@ -2307,6 +2341,29 @@ ArbolRN ArbolAVL::BuscarSupermercado(nodo *ra, int _codeSuper){
    }
 }
 
+bool ArbolAVL::VerificarSupermercado(nodo *ra, int _codeSuper){
+	ArbolRN n;
+    if(ra==NULL){
+    	cout<<"No existe el supermercado"<<endl;
+    	return false;
+    }else{
+       
+        if(_codeSuper==ra->valorS->getCodigo()){
+        	return true;
+        }
+
+		if (_codeSuper<ra->valorS->getCodigo()){
+			return VerificarSupermercado(ra->Hizq, _codeSuper);
+			
+		
+        }else{
+            if(_codeSuper > ra->valorS->getCodigo()){
+                return VerificarSupermercado(ra->Hder, _codeSuper);
+               }
+         }
+   }
+}
+
 ArbolAA ArbolRN::BuscarCategoria(nodo *ra, int _codP, int _codC, string _nomC, float _precio, int _stock){
 		   // nodo *n1;
 	ArbolAA n;
@@ -2432,14 +2489,14 @@ class listaDC {
     void borrarPosicion(int pos);
     int largoLista();
     
-    //bool LeerProveedores();
+    bool LeerProveedoresVentas();
     void InsertarInicio(Proveedor* v);
     bool LeerCategorias();
     void InsertarInicio(Categoria* v);
     void InsertarInicio(Producto* v);
-    bool LeerProductos();
+    bool LeerProductosVentas();
     void InsertarInicio(Cliente* v);
-    bool LeerClientes();
+    bool LeerClientesVentas();
     void InsertarInicio(ItemFactura* v);
     
     bool VerificarProveedor(int cod);
@@ -2455,7 +2512,7 @@ class listaDC {
     int MostrarPrecio(string producto);
     int MostrarStock(string producto);
     bool VerificarCategoria(string cat);
-    void ReducirStock(string producto, int num);
+    void ReducirStockVentas(int producto, int num);
     bool VerificarProducto(string prod);
     bool RevisarCodCategoria();
 	bool VerificarCodUnicoCategoria(int cod);
@@ -2786,6 +2843,9 @@ void listaDC::Mostrar()
      cout<<aux->valorPp<<"->";
      cout<<endl;
 }   
+
+
+
 //////////////END LISTA CIRCULAR DOBLE//////////////
 
 
@@ -2815,6 +2875,307 @@ int RetornarEntero(string num)
 	}
 ///////## END Verificar entero ##///////
 
+bool listaDC:: LeerProveedoresVentas() { //Leer Proveedores
+  	string cod_p;
+  	string nom_p;
+  	string dir_p;
+  	string tel_p;
+  	int cont = 1;
+  	int int_num;
+	int int_cod;
+	
+	std::ifstream is("Proveedores.txt");     // open file
+	
+	char c;
+	string l;
+	while (is.get(c))          // loop getting single characters
+		{
+		if (cont <= 4 )
+			{
+				
+			if (c != ';')
+		    	{
+		    	if (c == '\n')
+		    		{
+		    		tel_p = l;
+		    		cont++;	
+					l = "";
+					
+					}
+				else
+					{
+					l = l + c;
+					}
+		    	
+				//std::cout << l << endl;
+				}
+			else
+				{
+				switch (cont)
+					{
+					case 1: cod_p = l;
+					break;
+					
+					case 2: nom_p = l;
+					break;
+					
+					case 3: dir_p = l;
+					break;
+					
+					case 4: tel_p = l;
+					cout << tel_p << endl;
+					break;
+					}
+				cont++;	
+				l = "";
+				}
+			}
+		else
+			{
+			
+			//LLAMAR A LA FUNCION PARA CREAR EL PROVEEDOR//
+			if (VerificarEntero(tel_p) && VerificarEntero(cod_p))
+				{
+				
+				int_num = RetornarEntero(tel_p);
+				int_cod = RetornarEntero(cod_p);
+
+				Proveedor * o = new Proveedor(int_cod, nom_p, dir_p, int_num);
+		
+				InsertarInicio(o);
+
+				l = c;
+				
+				cod_p = "";
+		  		nom_p = "";
+		  		dir_p = "";
+		  		tel_p = "";
+		  			
+		  		cont = 1;
+				}
+			else
+				{
+				cout<<"Error en los códigos de los proveedores.";
+				return false;
+				}
+			}
+		}
+
+  	is.close();                // close file
+  	tel_p = l;
+  	
+  	if (VerificarEntero(tel_p) && VerificarEntero(cod_p))
+  		{
+		  
+	  	int_num = RetornarEntero(tel_p);
+		int_cod = RetornarEntero(cod_p);
+		
+	  	Proveedor * o = new Proveedor(int_cod, nom_p, dir_p, int_num);
+			
+		InsertarInicio(o);
+		return true;
+		}
+	cout<<"*********Error en los codigos de los proveedores*********"<<endl;
+	return false;
+}
+
+bool listaDC:: LeerProductosVentas() { //Leer Productos
+	
+	string CodProducto;
+	string CodCategoria;
+	string Nombre;
+	string PrecioUnit;
+	string CantidadStock;
+	
+	int int_cod;
+	int int_cat;
+	float int_precio;
+	int int_stock;
+
+  	int cont = 1;
+
+	std::ifstream is("Productos.txt");     // open file
+	
+	char c;
+	string l;
+	while (is.get(c))          // loop getting single characters
+		{
+		if (cont <= 6 )
+			{
+			if (c != ';')
+		    	{
+		    	if (c == '\n')
+		    		{
+		    		CantidadStock = l;
+		    		cont++;	
+					l = "";
+					}
+				else
+					{
+					l = l + c;
+					}
+				}
+			else
+				{
+				switch (cont)
+					{
+					case 2: CodProducto = l;
+					break;
+					case 3: CodCategoria = l;
+					break;
+					case 4: Nombre = l;
+					break;
+					case 5: PrecioUnit = l;
+					break;
+					case 6: CantidadStock = l;
+					break;
+					}
+				cont++;	
+				l = "";
+				}
+			}
+		else
+			{
+			if (VerificarEntero(CodProducto) && VerificarEntero(CodCategoria) && VerificarEntero(PrecioUnit) && VerificarEntero(CantidadStock))
+				{
+				int_cod = RetornarEntero(CodProducto);
+				int_cat = RetornarEntero(CodCategoria);
+				int_precio = RetornarEntero(PrecioUnit);
+				int_stock = RetornarEntero(CantidadStock);
+						
+				Producto * o = new Producto(int_cod, int_cat, Nombre, int_precio, int_stock); 
+				
+				InsertarInicio(o);
+		
+				
+				l = c;
+	
+				CodProducto = "";
+	  			CodCategoria = "";
+	  			Nombre = "";
+	  			PrecioUnit = "";
+	  			CantidadStock = "";
+	
+	  			
+	  			cont = 1;
+	  			}
+	  		else{
+	  			cout<<"*********Error en los productos*********"<<endl;
+				return false;
+			  }
+			}
+		
+		}
+
+  	is.close();                // close file
+  	CantidadStock = l;
+  	
+  	if (VerificarEntero(CodProducto) && VerificarEntero(CodCategoria) && VerificarEntero(PrecioUnit) && VerificarEntero(CantidadStock)){
+  		int_cod = RetornarEntero(CodProducto);
+		int_cat = RetornarEntero(CodCategoria);
+		int_precio = RetornarEntero(PrecioUnit);
+		int_stock = RetornarEntero(CantidadStock);
+		Producto * o = new Producto(int_cod, int_cat, Nombre, int_precio, int_stock); 
+		InsertarInicio(o);
+		return true;
+	  	}
+	cout<<"*********Error en los productos*********"<<endl;
+	return false;
+}
+
+bool listaDC:: LeerClientesVentas() { //Leer Clientes
+
+	string CedulaCliente;
+	string NombreCliente;
+	string DireccionCliente;
+	string TelefonoCliente;
+	
+	int int_ced;
+	int int_tel;
+
+
+  	int cont = 1;
+
+	std::ifstream is("Clientes.txt");     // open file
+	
+	char c;
+	string l;
+	while (is.get(c))          // loop getting single characters
+		{
+		if (cont <= 4 )
+			{
+			if (c != ';')
+		    	{
+		    	if (c == '\n')
+		    		{
+		    		TelefonoCliente = l;
+		    		cont++;	
+					l = "";
+					}
+				else
+					{
+					l = l + c;
+					}
+				}
+			else
+				{
+				switch (cont)
+					{
+					case 1: CedulaCliente = l;
+					break;
+					case 2: NombreCliente = l;
+					break;
+					case 3: DireccionCliente = l;
+					break;
+					case 4: TelefonoCliente = l;
+					break;
+					}
+				cont++;	
+				l = "";
+				}
+			}
+		else
+			{
+			if (VerificarEntero(CedulaCliente) && VerificarEntero(TelefonoCliente))
+				{
+				int_ced = RetornarEntero(CedulaCliente);
+				int_tel = RetornarEntero(TelefonoCliente);
+			
+				Cliente * o = new Cliente(int_ced, NombreCliente, DireccionCliente, int_tel); 
+	
+				InsertarInicio(o);
+				
+				
+				l = c;
+	
+				CedulaCliente = "";
+	  			NombreCliente = "";
+	  			DireccionCliente = "";
+	  			TelefonoCliente = "";
+		
+	  			cont = 1;
+  				}
+  			else{
+  				cout<<"*********Error en el archivo de clientes*********"<<endl;
+				return false;
+			  }
+			}
+		}
+
+  	is.close();                // close file
+  	TelefonoCliente = l;
+  	if (VerificarEntero(CedulaCliente) && VerificarEntero(TelefonoCliente))
+		{
+		int_ced = RetornarEntero(CedulaCliente);
+		int_tel = RetornarEntero(TelefonoCliente);
+		Cliente * o = new Cliente(int_ced, NombreCliente, DireccionCliente, int_tel); 
+
+		InsertarInicio(o);
+		return true;
+		}
+	cout<<"*********Error en el archivo de clientes*********"<<endl;
+	return false;
+}
 
 
 bool Binario:: LeerProveedores() { //Leer Proveedores
@@ -3528,14 +3889,14 @@ int listaDC::MostrarPrecio(string producto) //Muestra el precio de un producto
 	return 0;
 	}
 	
-void listaDC::ReducirStock(string producto, int num) //Disminuye el stock de un producto
+void listaDC::ReducirStockVentas(int producto, int num) //Disminuye el stock de un producto
 	{
 	pnodo aux = primero;
 	
-	if ((aux->valorPp)->getNombre() == producto)
+	if ((aux->valorPp)->getCodProducto() == producto)
 		{
 		(aux->valorPp)->sumarCont(num);
-		(aux->valorPp)->reducirStock(num);
+	//	(aux->valorPp)->reducirStock(num);
 		}
 		
 	else{
@@ -3543,10 +3904,10 @@ void listaDC::ReducirStock(string producto, int num) //Disminuye el stock de un 
 		
 		while (aux != primero)
 			{
-			if ((aux->valorPp)->getNombre() == producto)
+			if ((aux->valorPp)->getCodProducto() == producto)
 				{
 				(aux->valorPp)->sumarCont(num);
-				(aux->valorPp)->reducirStock(num);
+			//	(aux->valorPp)->reducirStock(num);
 				}
 			aux = aux->siguiente;
 			}
@@ -3850,7 +4211,7 @@ string listaDC::ProductoMayoresVentas(){ //BUSCA EL PRODUCTO CON MAS VENTAS
 	return (temp->valorPp)->getNombre();
 	}
 	
-string listaDC::ClienteMayoresVentas(){ //BUSCA EL PROVEEDOR CON MAS VENTAS
+string listaDC::ClienteMayoresVentas(){ //BUSCA EL CLIENTE CON MAS VENTAS
 	pnodo aux = primero;
 	pnodo temp = aux;
 	do {

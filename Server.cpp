@@ -26,13 +26,19 @@ int main()
 	int int_super_input;
 	int int_cat_input;
 	int int_pro_input;
+	bool SALIR=false;
 	
+	listaDC Items;
+	listaDC	Ventas;
+	listaDC Ventas2;
 	Binario BBB;
 	ArbolB B;
 	ArbolAVL AVL;
 	ArbolAA AA;
 	ArbolRN RN;
 	
+	Ventas.LeerClientesVentas();
+	Ventas2.LeerProductosVentas();
 	
 	B.LeerClientes();
 	
@@ -66,7 +72,22 @@ int main()
     {
         cout << "Client connected!" << endl;
         
-        for (;;){
+        while (true){
+        	
+        	int nError=WSAGetLastError();
+	        if(nError!=WSAEWOULDBLOCK&&nError!=0)
+			{
+				
+				std::cout<<"Client disconnected!\r\n";
+	
+				// Shutdown our socket
+				shutdown(server,SD_SEND);
+	
+				// Close our socket entirely
+				closesocket(server);
+	
+				break;
+			}
 			
 			char *intro_msg = "||||||||||||||||||||||||||||||||Bienvenido al sistema|||||||||||||||||||||||||||||||||||||||\r\n";
 			send(client, intro_msg, strlen(intro_msg), 0);
@@ -77,9 +98,25 @@ int main()
 					AA.LeerProductos(AVL);
 					//B.LeerClientes() && RN.LeerCategorias() && ListaProductos.LeerProductos()
 					
-		
+				
 				while (true)
 					{
+						
+						int nError=WSAGetLastError();
+				        if(nError!=WSAEWOULDBLOCK&&nError!=0)
+						{
+							
+							std::cout<<"Client disconnected!\r\n";
+				
+							// Shutdown our socket
+							shutdown(server,SD_SEND);
+				
+							// Close our socket entirely
+							closesocket(server);
+				
+							break;
+						}
+						
 					BBB.PreordenR(BBB.RetornarRaiz());
 					
 					char * proveedor_msg = "Ingrese el codigo del proveedor: "; 
@@ -98,7 +135,7 @@ int main()
 					}
 					catch (std::exception& e) {
 						
-		    			std::cerr << "******************ERROoooOOOOOR******************\n";
+		    			std::cerr << "******************ERROR******************\n";
 		    			//return 0;
 		 				}
 					
@@ -139,23 +176,30 @@ int main()
 						
 						//ListaCategorias.MostrarTodasCategorias();
 						
-						while (true){
+						
 						//cout<<"\nIngrese el codigo del supermercado: ";
 						//std::getline(std::cin,super_input);
-						
-						char * supermercado_msg = "\nIngrese el codigo del supermercado: "; 
-						send(client, supermercado_msg, strlen(supermercado_msg), 0);
-						
-						recv(client, buffer, sizeof(buffer), 0);
-						
-						try{
-						int_super_input = std::atoi(buffer);
+						while (true){
+							
+							char * supermercado_msg = "\nIngrese el codigo del supermercado: "; 
+							send(client, supermercado_msg, strlen(supermercado_msg), 0);
+							
+							recv(client, buffer, sizeof(buffer), 0);
+							
+							try{
+							int_super_input = std::atoi(buffer);
+							}
+							catch (std::exception& e) {
+			    			std::cerr << "******************ERROR******************\n";
+			 				}
+			 				
+			 				if (AVL.VerificarSupermercado(AVL.raiz, int_super_input)){
+			 					break;
+							 }
+							
+							memset(buffer, 0, sizeof(buffer));
 						}
-						catch (std::exception& e) {
-		    			std::cerr << "******************ERROR******************\n";
-		 				}
 						
-						memset(buffer, 0, sizeof(buffer));
 						
 						RN = AVL.BuscarSupermercado(AVL.raiz, int_super_input);
 						
@@ -167,7 +211,8 @@ int main()
 						
 						//cout<<"\nIngrese el codigo de la categoria: ";
 					//	std::getline(std::cin,cat_input);
-						
+					memset(buffer, 0, sizeof(buffer));
+					while (true){	
 						char * categoria_msg = "\nIngrese el codigo de la categoria: "; 
 						send(client, categoria_msg, strlen(categoria_msg), 0);
 						
@@ -226,15 +271,17 @@ int main()
 												int_cant_input = std::atoi(buffer);
 												}
 											catch (std::exception& e) {
-							    				std::cerr << "******************ERRpppOR******************\n";
-							    				//return 0;
+							    				std::cerr << "******************ERROR******************\n";
+							    				
+												;
 							 					}
 							 				
 											memset(buffer, 0, sizeof(buffer));
 											
 							 				if (AA.VerificarStock(AA.raiz, int_pro_input)<int_cant_input){
-												cout<<endl<<"******************No hay tantas unidades en stock******************"<<endl;
-												
+												char * error_stock = "******************No hay tantas unidades en stock******************\n";
+												send(client, error_stock, strlen(error_stock), 0);
+												//memset(buffer, 0, sizeof(buffer));
 												}
 											else{
 												break;
@@ -243,46 +290,62 @@ int main()
 										break;
 								
 							}
-						cout<<"AJKSFJLASKJFLAKSJF";
+						
 						//break;
 						}
 						
-						/*
-						cod_categoria = ListaCategorias.MostrarCodigoCategoria(cat_input);
-						precio = ListaProductos.MostrarPrecio(pro_input);
-												
-						ItemFactura* Item = new ItemFactura(cod_input_int, nom_input, Desc,cod_categoria, cat_input, int_cant_input, pro_input, precio, precio*int_cant_input);
-												
-						Item->facturar();
-						
-						printf ("%.90s\n", "\n///////////////// ¿Desea efectuar la compra? (Y/N) \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n");
-						yes_no = cin.get();
-						
-						if (yes_no == 'Y')
-							{
-							Items.InsertarInicio(Item);
-							
-							ListaProductos.ReducirStock(pro_input, int_cant_input);	
-							}
-						cin.sync();	
-							printf ("%.90s\n", "\n///////////////// ¿Desea comprar otro producto? (Y/N) \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n");
-							char comprar_otra_vez;
-							//std::getline(std::cin,comprar_otra_vez);
-							comprar_otra_vez = cin.get();
-							
-							if (comprar_otra_vez == 'N')
-								{
-								break;
-								}
-								*/
-							
-						}
+					precio = AA.MostrarPrecio(AA.raiz, int_pro_input);
+										
+					ItemFactura* Item = new ItemFactura(cod_input_int, nom_input, Desc,cod_categoria, cat_input, int_cant_input, pro_input, precio, precio*int_cant_input);
+											
+					Item->facturar();
 					
+					memset(buffer, 0, sizeof(buffer));
+					
+					
+					
+					char * comprar_msg = "\n///////////////// ¿Desea efectuar la compra? (Y/N) \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"; 
+					send(client, comprar_msg, strlen(comprar_msg), 0);
+											
+					recv(client, buffer, sizeof(buffer), 0);
+					
+					if (buffer[0] == 'Y' || buffer[0] == 'y')
+						{
+						Items.InsertarInicio(Item);
+						Ventas2.ReducirStockVentas(int_pro_input, int_cant_input);
+						AA.ReducirStock(AA.raiz, int_pro_input, int_cant_input);	
+						}
+						
+					memset(buffer, 0, sizeof(buffer));
+					cin.sync();	
 						
 						
+						char * comprar_otra_vez = "\n///////////////// ¿Desea comprar otro producto? (Y/N) \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n"; 
+						send(client, comprar_otra_vez, strlen(comprar_otra_vez), 0);
+											
+						recv(client, buffer, sizeof(buffer), 0);
+						
+						if (buffer[0] == 'N' || buffer[0] == 'n')
+							{
+							
+							SALIR = true;
+							break;
+							}
+							
+						
+						}
+				
+					
+					
 					cin.sync();
 					cod_input="";
 					}
+				cout<<"Producto mas vendido: ";
+				Ventas2.ProductoMayoresVentas();
+					
+				cout<<"Cliente que mas compro: ";
+				Ventas.ClienteMayoresVentas();
+				
 				/*
 				cout<<"||||||||||||||||||||||||||||||||||| Resumen del dia ||||||||||||||||||||||||||||||||||||||"<<endl;
 				cout<<"Proveedor que mas vendio: ";
@@ -299,40 +362,28 @@ int main()
 				
 				cout<<endl;
 				
-				
-				Items.ImprimirFactura();*/
+				*/
+				Items.ImprimirFactura();
 				
 				}
 			else{
 				return 0;
 			}
-			
-			
-			
-        recv(client, buffer, sizeof(buffer), 0);
+
         
-	
-        cout << "Client says: " << buffer << endl;
-        memset(buffer, 0, sizeof(buffer));
         
-        int nError=WSAGetLastError();
-        if(nError!=WSAEWOULDBLOCK&&nError!=0)
-		{
-			
-			std::cout<<"Client disconnected!\r\n";
-
-			// Shutdown our socket
-			shutdown(server,SD_SEND);
-
-			// Close our socket entirely
-			closesocket(server);
-
-			break;
-		}
         //closesocket(client);
         //cout << "Client disconnected." << endl;
- 		}
         
+        if (SALIR){
+			break;
+		}
+ 		}
+ 	
+       return 0;
     }
+    closesocket(client);
+	cout << "Client disconnected." << endl;
+    return 0;
    }
 
