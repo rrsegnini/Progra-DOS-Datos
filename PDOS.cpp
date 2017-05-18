@@ -79,7 +79,7 @@ class ItemFactura{
 		int getPrecioUnitario(){
 			return PrecioUnitario;
 		}
-			
+		/*
 		void facturar(){
 			
 			if (Descuento)
@@ -118,7 +118,7 @@ class ItemFactura{
 		}
 		
 	
-		
+		*/
 		
 	private:
 		int CodigoProveedor;
@@ -290,6 +290,10 @@ class Producto{
 		void sumarCont(int n){
 			cont = cont+n;
 		}
+		
+		void setCodigo(int codigo){
+			CodProducto=codigo;
+			}
 	
 	
 	private:
@@ -675,6 +679,15 @@ public:
     void ReducirStock(nodo *R, int cod, int redux);
     
     int MostrarPrecio(nodo *R, int cod);
+    
+    nodo* torsion(nodo *T);
+	nodo* division(nodo *T);
+	nodo* insertar(nodo *T, int _codigoProducto, int _codigoCategoria,
+	                                       std::string _nombreProducto, double _precioPorUnidad, int _cantidadEnStock);
+	nodo *decrementarNivel(nodo *_raiz);
+	nodo* borrar(nodo *T, int _codPro);
+		
+	
 
 
 
@@ -689,6 +702,9 @@ class nodo {
    public:
    		nodo(){
    			FB=0;
+   			Hizq = NULL;
+			Hder = NULL;
+			level=0;
 		   }
    		//Constructor int
 	    nodo(int v)
@@ -774,11 +790,13 @@ class nodo {
 	    	
 	    	level=0;
 		    count=0;
+		    Hizq = NULL;
+			Hder = NULL;
 		
-		    left = NULL;
+		    /*left = NULL;
 		    right = NULL;
 		    parent = NULL;
-		    root= NULL;
+		    root= NULL;*/
 	    	}
 		
 	   nodo(Producto* v, nodo * signodo)
@@ -867,7 +885,7 @@ class nodo {
 	friend class PilaB;
 	friend class ArbolRN;
 	friend class ArbolAVL;
-	
+	friend class ArbolAA;
 };
 
 typedef nodo *pnodo;
@@ -1119,7 +1137,7 @@ void ArbolAVL::PreordenI(nodo *R){
 
 
 
-
+/*
 void ArbolAA::lookup(int _codP, int _codC, string _nomC, float _precio, int _stock)
 {
 	Producto *productoTemp = new Producto(_codP, _codC, _nomC, _precio, _stock);
@@ -1239,6 +1257,7 @@ void ArbolAA::print(nodo* temp)
     cout<<"  Level: "<<temp->level<<endl;
     print(temp->right);
 }
+*/
 
 void ArbolAA::PreordenI(nodo *R){
     if(R==NULL){
@@ -1247,10 +1266,122 @@ void ArbolAA::PreordenI(nodo *R){
         cout<<endl<<"Codigo: "<<R->valorPp->getCodProducto()<<endl;
         cout<<"Nombre: "<<R->valorPp->getNombre()<<endl;
         
-        PreordenI(R->left);
-        PreordenI(R->right);
+        PreordenI(R->Hizq);
+        PreordenI(R->Hder);
     }
 }
+
+
+
+
+
+///////////////////AA/////////////////////77
+nodo* ArbolAA::torsion(nodo *T) {
+    if (!T)
+        return NULL;
+    else if(T->Hizq && T->Hizq->level == T->level) {
+        nodo* L = T->Hizq;
+        T->Hizq = L->Hder;
+        L->Hder = T;
+        return  L;
+    } else  {
+        return T;
+    }
+
+}
+
+nodo* ArbolAA::division(nodo *T) {
+    if (!T) {
+        return NULL;
+    }else if (T->Hder && T->Hder->Hder &&  T->level == T->Hder->Hder->level) {
+        nodo* R = T->Hder;
+        T->Hder = R->Hizq;
+        R->Hizq = T;
+        R->level++;
+        return R;
+    }else {
+        return T;
+    }
+}
+
+
+nodo* ArbolAA::insertar(nodo *T, int _codigoProducto, int _codigoCategoria,
+                                       std::string _nombreProducto, double _precioPorUnidad, int _cantidadEnStock) {
+
+    if (!T) {
+    	Producto *prdct = new Producto(_codigoProducto, _codigoCategoria, _nombreProducto, _precioPorUnidad, _cantidadEnStock);
+        nodo* X = new nodo(prdct);
+        return X;
+    }else if (_codigoProducto < T->valorPp->getCodProducto()) {
+        T->Hizq = insertar(T->Hizq, _codigoProducto,_codigoCategoria
+                ,_nombreProducto,_precioPorUnidad,_cantidadEnStock);
+    } else if (_codigoProducto > T->valorPp->getCodProducto()) {
+        T->Hder = insertar(T->Hder, _codigoProducto,_codigoCategoria
+                ,_nombreProducto,_precioPorUnidad,_cantidadEnStock);
+    }
+    T = torsion(T);
+    T = division(T);
+    return T;
+
+}
+
+
+nodo* ArbolAA::decrementarNivel(nodo *_raiz) {
+    int debe_ser;
+    if (_raiz->Hizq != NULL & _raiz->Hder != NULL) {
+        //debe_ser = std::min(_raiz->Hizq->level,_raiz->Hder->level + 1);
+        if (_raiz->Hizq->level < _raiz->Hder->level + 1) {
+            debe_ser = _raiz->Hizq->level;
+        } else {
+            debe_ser = _raiz->Hder->level + 1;
+        }
+    }
+    else if (_raiz->Hizq) {
+        debe_ser = _raiz->Hizq->level;
+    }else if (_raiz->Hder){
+        debe_ser = _raiz->Hder->level;
+    }
+
+    if (debe_ser > _raiz->level) {
+        _raiz->level = debe_ser;
+        if (debe_ser < _raiz->Hder->level) {
+            _raiz->Hder->level = debe_ser;
+        }
+    }
+    return _raiz;
+}
+
+nodo* ArbolAA::borrar(nodo *T, int _codPro) {
+    //nodo* L = new nodo();
+    int L;
+    if (T && _codPro > T->valorPp->getCodProducto()) {
+        T->Hder = borrar(T->Hder,_codPro);
+    } else if (T && _codPro < T->valorPp->getCodProducto()) {
+        T->Hizq = borrar(T->Hizq,_codPro);
+    } else {
+        if (T->Hizq == NULL && T->Hder==NULL) {
+            return NULL;
+        } else if (T->Hizq == NULL) {
+            L = T->Hder->valorPp->getCodProducto();
+            T->Hder = borrar(T->Hder,L);
+            T->valorPp->setCodigo(L);
+        } else {
+            L = T->Hizq->valorPp->getCodProducto();
+            T->Hizq = borrar(T->Hizq,L);
+            T->valorPp->setCodigo(L);
+        }
+
+    }
+    T = decrementarNivel(T);
+    T = torsion(T);
+    if (T) T->Hder = torsion(T->Hder);
+    if (T && T->Hder)T->Hder->Hder = torsion(T->Hder->Hder);
+    T = division(T);
+    if(T->Hder) T->Hder = torsion(T->Hder);
+    return T;
+
+}
+/////////////////////////////////////////////
 
 bool ArbolAA::VerificarProducto(nodo *R, int cod){
     if(R==NULL){
@@ -1520,8 +1651,8 @@ ApuntadorPagina ArbolB::InsertarB(ApuntadorPagina& Raiz, int Numero, int _id, st
     if(Raiz->EmpujarArriba == true){
         P = new Pagina();
         P->cuenta = 1;
-        int	int_tel = stoi(_telefono);
-        Cliente *clienteTemp = new Cliente(Raiz->X, _nombre, _direccion, int_tel);
+        int	int_tel = std::atoi(_telefono.c_str());
+        Cliente *clienteTemp = new Cliente(_id, _nombre, _direccion, int_tel);
 		 
         nodo* Auxiliar = new nodo(clienteTemp);
         P->Claves->InsertarClave(Auxiliar,1);
@@ -1545,7 +1676,7 @@ ApuntadorPagina ArbolB::EmpujarB(ApuntadorPagina Raiz, int Numero, int _id, stri
     if(Raiz == NULL){
         Raiz = new Pagina();
         Raiz->EmpujarArriba = true;
-        Raiz->X = Numero;
+        Raiz->X = _id;
         Raiz->Xr = NULL;
         Raiz->llamadas++;
         return Raiz;
@@ -1554,7 +1685,7 @@ ApuntadorPagina ArbolB::EmpujarB(ApuntadorPagina Raiz, int Numero, int _id, stri
     else{
         Raiz = BuscarNodoB(Raiz,Numero);
         if(Raiz->Esta){
-           // std::cout << "Elemento Repetido" << std::endl;
+           std::cout << "Elemento Repetido" << std::endl;
           	return Raiz;
 
         }
@@ -1571,11 +1702,12 @@ ApuntadorPagina ArbolB::EmpujarB(ApuntadorPagina Raiz, int Numero, int _id, stri
                 Raiz->EmpujarArriba = false;
                 Raiz = MeterHojaB(Raiz,  _id,  _nombre,  _direccion,  _telefono);
             }
-	}
+	
         else{
             Raiz->EmpujarArriba = true;
             Raiz = DividirNodoB(Raiz,  _id,  _nombre,  _direccion,  _telefono);
 
+        }
         }
         return Raiz;
 
@@ -1611,8 +1743,8 @@ ApuntadorPagina ArbolB::MeterHojaB(ApuntadorPagina& Raiz, int _id, string _nombr
         Raiz->Ramas->InsertarRama(Raiz->Ramas->ObtenerRama(I),I+1);
         I--;
     }
-    int	int_tel = stoi(_telefono);
-    Cliente *clienteTemp2 = new Cliente(Raiz->X, _nombre, _direccion, int_tel);
+    int	int_tel = atoi(_telefono.c_str());
+    Cliente *clienteTemp2 = new Cliente(_id, _nombre, _direccion, int_tel);
 		 
     nodo* X = new nodo(clienteTemp2);
         
@@ -1686,13 +1818,16 @@ void ArbolB::RecorridoInordenB(ApuntadorPagina Raiz){
             nodo* Recorrido = Raiz->Claves->ObtenerApuntadorClave(I);
 
           cout<< "idCliente: "<< Recorrido->valorCl->getCedula() << endl;
-            cout << "Nombre: " << Recorrido->valorCl->getNombre()<< endl;
+           cout << "Nombre: " << Recorrido->valorCl->getNombre()<< endl;
             //cout << "Cantidad de Compras: " << Recorrido->valorCl-><< endl;
-            cout << "Ciudad: " << Recorrido->valorCl->getDireccion()<< endl;
-            cout << "Telefono: " << Recorrido->valorCl->getTelefono() << endl;
-            cout << "\n" << endl;
+          cout << "Ciudad: " << Recorrido->valorCl->getDireccion()<< endl;
+          cout << "Telefono: " << Recorrido->valorCl->getTelefono() << endl;
+          cout << "\n" << endl;
 
-            RecorridoInordenB(Raiz->Ramas->ObtenerRama(I-1));
+            if(I==1){
+                RecorridoInordenB(Raiz->Ramas->ObtenerRama(I-1));
+            }
+            RecorridoInordenB(Raiz->Ramas->ObtenerRama(I));
 
             I++;
         }
@@ -1811,11 +1946,11 @@ int PilaB::Size(){
 
 void ArbolB::BuscarNodo(int Clave, ApuntadorPagina P, bool & Encontrado, int & K)
 {
-// Este método examina la pagina referenciada por P. De no //encontrarse el valor nuevo, K será el índice de la rama por //donde bajar
+// Este mï¿½todo examina la pagina referenciada por P. De no //encontrarse el valor nuevo, K serï¿½ el ï¿½ndice de la rama por //donde bajar
 
 {
 int C =  P->Claves->ObtenerApuntadorClave(1)->valorCl->getCedula();
-if (Clave < C)   // recuerde que los arreglos aquí inician en 1
+if (Clave < C)   // recuerde que los arreglos aquï¿½ inician en 1
   {
   	//P->K = 0;
 	//P->Esta = 0;
@@ -1845,22 +1980,24 @@ void ArbolB::Eliminar (int C1, ApuntadorPagina Raiz){
 
     bool Encontrado;
     ApuntadorPagina P;
-{
+
    EliminarRegistro(C1,Raiz,Encontrado);
    if (!Encontrado){
-   		cout<< "El elemento no se encuentra en el árbol"<<endl;
+   		cout<< "El elemento no se encuentra en el ï¿½rbol"<<endl;
    }
       
    else{
    
-      if (Raiz->cuenta == 0) // la raíz ha quedado vacia
+      if (Raiz->cuenta == 0) // la raï¿½z ha quedado vacia
       {
+      	P->cuenta;
         P= Raiz;
         Raiz= Raiz->Ramas->ObtenerRama(0);
+        Raiz->cuenta;
         delete(P);
       }
   }
-}
+//cout<<"Las cuentas: "<<Raiz->cuenta<<endl;
 }
 
 
@@ -1886,7 +2023,7 @@ void ArbolB::EliminarRegistro(int C1, ApuntadorPagina Raiz, bool & Encontrado)
            if (Raiz->Ramas->ObtenerRama(K-1)==NULL)//Las ramas estan indexadas desde 0 a Max, por lo que este nodo es hoja
               {
 			  Quitar(Raiz,K);
-			 cout<<"Despues de Quitar: " << Raiz->Claves->ObtenerApuntadorClave(1)->valorCl->getCedula()<<endl;
+			 //cout<<"Despues de Quitar: " << Raiz->Claves->ObtenerApuntadorClave(1)->valorCl->getCedula()<<endl;
 			  
           	}
            else //No es hoja
@@ -1905,7 +2042,7 @@ void ArbolB::EliminarRegistro(int C1, ApuntadorPagina Raiz, bool & Encontrado)
             // claves igual o mayor que el minimo necesario
             if (Raiz->Ramas->ObtenerRama(K) !=NULL){
 			
-              if (Raiz->Ramas->ObtenerRama(K)->cuenta<5){
+              if (Raiz->Ramas->ObtenerRama(K)->cuenta<2){
 			 
                  Restablecer(Raiz,K);
                   }
@@ -1978,7 +2115,8 @@ void ArbolB::Restablecer (ApuntadorPagina P, int& K)
 {
   if (K>0)   //Tiene hermano izquierdo
   {
-       if (P->Ramas->ObtenerRama(K-1)->cuenta > 5) //Tiene mas claves que el minimo y por tanto puede desplazarse una clave
+  	int cntas= P->Ramas->ObtenerRama(K-1)->cuenta;
+       if (cntas > 2) //Tiene mas claves que el minimo y por tanto puede desplazarse una clave
            {
 		    MoverDerecha(P,K);
 		}
@@ -1989,7 +2127,7 @@ void ArbolB::Restablecer (ApuntadorPagina P, int& K)
   }
   else
    {//solo tiene hermano derecho
-      if (P->Ramas->ObtenerRama(1)->cuenta > 5)
+      if (P->Ramas->ObtenerRama(1)->cuenta > 2)
       {
         //Tiene mas claves que el minimo
         int int_temp = 1;
@@ -2012,25 +2150,30 @@ void ArbolB::Restablecer (ApuntadorPagina P, int& K)
  //necesario, inserta la clave k del nodo antecedente y a su vez asciende la clave mayor ( la mas a la derecha) 
  //del hermano izquierdo
 {
-  int J;
+  int J = P->Ramas->ObtenerRama(K)->cuenta;
    //with P.Ramas[K]
-   {
-      for (J= P->Ramas->ObtenerRama(K)->cuenta; J>=1; J--) 
+   
+      for (J; J>=1; J--)
       {
-        P->Ramas->ObtenerRama(K)->Claves[J+1]= P->Ramas->ObtenerRama(K)->Claves[J];
-        P->Ramas->ObtenerRama(K)->Ramas[J+1]=P->Ramas->ObtenerRama(K)->Ramas[J];
+        P->Ramas->ObtenerRama(K)->Claves->arregloClaves[J+1]= P->Ramas->ObtenerRama(K)->Claves->ObtenerApuntadorClave(J);
+        P->Ramas->ObtenerRama(K)->Ramas[J-1]=P->Ramas->ObtenerRama(K)->Ramas[J];
       }
-     P->Ramas->ObtenerRama(K)->cuenta=J= P->Ramas->ObtenerRama(K)->cuenta+1;
+     P->Ramas->ObtenerRama(K)->cuenta = P->Ramas->ObtenerRama(K)->cuenta+1;
      P->Ramas->ObtenerRama(K)->Ramas[1] = P->Ramas->ObtenerRama(K)->Ramas[0];
-     P->Ramas->ObtenerRama(K)->Claves[1] = P->Claves[K]; // baja la clave del nodo padre
-   }
+     P->Ramas->ObtenerRama(K)->Claves->arregloClaves[1] = P->Claves->ObtenerApuntadorClave(K); // baja la clave del nodo padre
+   
    //Ahora sube la clave desde el hermano izquierdo al nodo padre, para reemplazar la que bajo
    //with P.Ramas[K-1] // hermano izquierdo
-   {
-     P->Claves[K]=P->Ramas->ObtenerRama(K-1)->Claves[P->Ramas->ObtenerRama(K-1)->cuenta];
-     P->Ramas->ObtenerRama(K)->Ramas[0] = P->Ramas->ObtenerRama(K-1)->Ramas[P->Ramas->ObtenerRama(K-1)->cuenta];
-     P->Ramas->ObtenerRama(K-1)->cuenta = P->Ramas->ObtenerRama(K-1)->cuenta-1;
-   }
+   
+    // P->Claves[K]=P->Ramas->ObtenerRama(K-1)->Claves[P->Ramas->ObtenerRama(K-1)->cuenta];
+     P->Claves->arregloClaves[K] = P->Ramas->ObtenerRama(K-1)->Claves->ObtenerApuntadorClave(P->Ramas->ObtenerRama(K-1)->cuenta);
+     
+     //P->Ramas->ObtenerRama(K)->Ramas[0] = P->Ramas->ObtenerRama(K-1)->Ramas[P->Ramas->ObtenerRama(K-1)->cuenta];////////
+     
+     P->Ramas->ObtenerRama(K)->Ramas[0] = P->Ramas->ObtenerRama(K-1)->Ramas[0];
+     
+	 P->Ramas->ObtenerRama(K-1)->cuenta = P->Ramas->ObtenerRama(K-1)->cuenta-1;
+   
 }
 
 
@@ -2043,19 +2186,19 @@ void ArbolB::MoverIzquierda (ApuntadorPagina P, int& K)
   //with P.Ramas[K-1]// es el nodo con menos claves que el minimo
   {
     P->Ramas->ObtenerRama(K-1)->cuenta=P->Ramas->ObtenerRama(K-1)->cuenta+1;
-    P->Ramas->ObtenerRama(K-1)->Claves[P->Ramas->ObtenerRama(K-1)->cuenta]=P->Claves[K];
+    P->Ramas->ObtenerRama(K-1)->Claves->arregloClaves[P->Ramas->ObtenerRama(K-1)->cuenta]=P->Claves->ObtenerApuntadorClave(K);
     P->Ramas->ObtenerRama(K-1)->Ramas[P->Ramas->ObtenerRama(K-1)->cuenta]=P->Ramas->ObtenerRama(K)->Ramas[0];
       // baja la clave del nodo padre
   }
   //with P.Ramas[K] // hermano derecho
   {
-    P->Claves[K]=P->Ramas->ObtenerRama(K)->Claves[1];   //sube al nodo padre de la clave 1 del hermano derecho, sustituye a la que bajo
+    P->Claves->arregloClaves[K]=P->Ramas->ObtenerRama(K)->Claves->ObtenerApuntadorClave(1);   //sube al nodo padre de la clave 1 del hermano derecho, sustituye a la que bajo
     P->Ramas[0]=P->Ramas->ObtenerRama(K)->Ramas[1];
     P->Ramas->ObtenerRama(K)->cuenta=P->Ramas->ObtenerRama(K)->cuenta-1;
     
     for (J=1; J<=P->Ramas->ObtenerRama(K)->cuenta; J++)
     {
-       P->Ramas->ObtenerRama(K)->Claves[J]= P->Ramas->ObtenerRama(K)->Claves[J+1];
+       P->Ramas->ObtenerRama(K)->Claves->arregloClaves[J]= P->Ramas->ObtenerRama(K)->Claves->ObtenerApuntadorClave(J+1);
        P->Ramas->ObtenerRama(K)->Ramas[J] = P->Ramas->ObtenerRama(K)->Ramas[J+1];
     }
   }
@@ -2077,20 +2220,20 @@ void ArbolB::Combina(ApuntadorPagina P, int& K)
   //with P.Ramas[K-1]//hermano izquierdo
   {
     P->Ramas->ObtenerRama(K-1)->cuenta = P->Ramas->ObtenerRama(K-1)->cuenta+1;
-    P->Ramas->ObtenerRama(K-1)->Claves[P->Ramas->ObtenerRama(K-1)->cuenta]=P->Claves[K];// baja clave mediana desde el nodo padre
+    P->Ramas->ObtenerRama(K-1)->Claves->arregloClaves[P->Ramas->ObtenerRama(K-1)->cuenta]=P->Claves->ObtenerApuntadorClave(K);// baja clave mediana desde el nodo padre
     P->Ramas->ObtenerRama(K-1)->Ramas[P->Ramas->ObtenerRama(K-1)->cuenta] = Q->Ramas[0];
     
     for (J=1; J<= Q->cuenta; J++)
     {
       P->Ramas->ObtenerRama(K-1)->cuenta = P->Ramas->ObtenerRama(K-1)->cuenta+1;
-      P->Ramas->ObtenerRama(K-1)->Claves[P->Ramas->ObtenerRama(K-1)->cuenta] = Q->Claves[J];
+      P->Ramas->ObtenerRama(K-1)->Claves->arregloClaves[P->Ramas->ObtenerRama(K-1)->cuenta] = Q->Claves->ObtenerApuntadorClave(J);
       P->Ramas->ObtenerRama(K-1)->Ramas[P->Ramas->ObtenerRama(K-1)->cuenta] = Q->Ramas[J];
     }
   }
  //Reajustadas las claves y ramas del nodo padre debido a que antes ascendio la clave K
  //with P
- 
-  for (J=K; J<= P->Ramas->ObtenerRama(K-1)->cuenta-1; J++)
+	int cuentas_menos_uno = (P->cuenta)-1;
+  for (J=K; J<= cuentas_menos_uno; J++)
   {
     P->Claves[J]=P->Claves[J+1];
     P->Ramas[J]=P->Ramas[J+1];
@@ -2373,7 +2516,8 @@ ArbolAA ArbolRN::BuscarCategoria(nodo *ra, int _codP, int _codC, string _nomC, f
     }else{
        
         if(_codC==ra->valorC->getCodigo()){
-			ra->arbolaa.lookup(_codP, _codC, _nomC, _precio, _stock);
+			//ra->arbolaa.lookup(_codP, _codC, _nomC, _precio, _stock);
+			ra->arbolaa.insertar(ra->arbolaa.raiz, _codP, _codC, _nomC, _precio, _stock);
         	return ra->arbolaa;
         }
 
@@ -2856,7 +3000,7 @@ bool VerificarEntero(string num)
 	{
 	int int_num;
 	try{
-		int_num = std::stoi(num);
+		int_num = std::atoi(num.c_str());
 		}
 	catch (std::exception& e) {
     	std::cerr << "******************ERROR******************\n";
@@ -2869,7 +3013,7 @@ bool VerificarEntero(string num)
 int RetornarEntero(string num)
 	{
 	int int_num;
-	int_num = std::stoi(num);
+	int_num = std::atoi(num.c_str());
 	
 	return int_num;
 	}
@@ -2955,7 +3099,7 @@ bool listaDC:: LeerProveedoresVentas() { //Leer Proveedores
 				}
 			else
 				{
-				cout<<"Error en los códigos de los proveedores.";
+				cout<<"Error en los cï¿½digos de los proveedores.";
 				return false;
 				}
 			}
@@ -3264,7 +3408,7 @@ bool Binario:: LeerProveedores() { //Leer Proveedores
 				}
 			else
 				{
-				cout<<"Error en los códigos de los proveedores.";
+				cout<<"Error en los cï¿½digos de los proveedores.";
 				return false;
 				}
 			
@@ -3382,7 +3526,7 @@ bool ArbolAVL:: LeerSupermercados() { //Leer Supermercados
 	return false;
 }
 
-bool ArbolRN:: LeerCategorias(ArbolAVL &AVL) { //Leer Categorías
+bool ArbolRN:: LeerCategorias(ArbolAVL &AVL) { //Leer Categorï¿½as
 
 	string cod_c;
 	string des_c;
@@ -3770,7 +3914,7 @@ bool Binario::VerificarProveedor(int cod) //Verifica que el proveedor exista
 			}
 			}
 		}
-	cout<<"************************ ¡Proveedor invalido! ************************\n"<<endl;
+	cout<<"************************ ï¿½Proveedor invalido! ************************\n"<<endl;
 	return false;
 	}
 */	
@@ -3799,7 +3943,7 @@ bool listaDC::VerificarProducto(string prod) //Verifica que el producto exista
 			aux=aux->siguiente;
 			}
 		}
-	cout<<"************************ ¡Producto invalido! ************************\n"<<endl;
+	cout<<"************************ ï¿½Producto invalido! ************************\n"<<endl;
 	return false;
 	}
 	
@@ -3860,7 +4004,7 @@ string listaDC::MostrarCategoria(int cod) //Muestra la categoria segun el codigo
 		aux = aux->siguiente;
 		}
 
-	return "No está";
+	return "No estï¿½";
 	}
 
 
@@ -4303,7 +4447,7 @@ void listaDC::ImprimirFactura(){
 	myfile.close();	
 		}
 
-/*
+
 int main()
 	{
 
@@ -4339,11 +4483,11 @@ int main()
 	listaDC ListaCategorias;
 	
 		
-	ListaProveedores.LeerProveedores();
-	NodoBinario *r = ListaProveedores.RetornarRaiz();
-	ListaProveedores.InordenR(r);
-	ListaProveedores.PostordenR(r);
-	ListaProveedores.PreordenR(r);
+//	ListaProveedores.LeerProveedores();
+//	NodoBinario *r = ListaProveedores.RetornarRaiz();
+//	ListaProveedores.InordenR(r);
+//	ListaProveedores.PostordenR(r);
+//	ListaProveedores.PreordenR(r);
 	
 	
 	
@@ -4353,17 +4497,65 @@ int main()
 	ArbolAA AA;
 	ArbolRN RN;
 	
+	B.IniciarInsercionB(89, 89, "asd", "asd", "78451245");
+	B.IniciarInsercionB(90, 90, "Robs", "ASD", "45781245");
+	B.IniciarInsercionB(95, 95, "Serg", "ASd", "45781245");
+	B.IniciarInsercionB(100, 100, "Dan", "aSD", "12458956");
 	
-	B.LeerClientes();
+	B.IniciarInsercionB(11, 11, "Trroo", "AASF", "45781254");
+	B.IniciarInsercionB(12, 12, "Jose", "AASF", "45781254");
+    B.IniciarInsercionB(13, 13, "Jose", "AASF", "45781254");
+    B.IniciarInsercionB(50, 50, "Jose", "AASF", "45781254");
+    B.IniciarInsercionB(70, 70, "Jose", "AASF", "45781254");
+    B.IniciarInsercionB(40, 40, "Jose", "AASF", "45781254");
+	B.IniciarInsercionB(105, 105, "Dan", "aSD", "12458956");
+	
+//	cout<<"Raiz: "<<B.raizB->Claves->ObtenerClave(1);
+//	B.LeerClientes();
+  //  B.RecorridoInordenB(B.raizB);
 
 
 	//cout<<"RAIZ: "<<B.raizB->Claves->ObtenerClave(1);
 
 //	B.IniciarRecorridoB();
 	
-	//B.Eliminar(11, B.raizB);
+//	B.Eliminar(100, B.raizB);
+	cout<<"Segundo recorrido"<<endl;
+	//cout<<"Cuenta: "<<B.raizB->cuenta<<endl;
+    B.IniciarRecorridoB();
+    
+    
+    /*
+    
+    AA.lookup(10, 11, "Rosas", 10.2, 5);
+    AA.lookup(12, 14, "Jejeje", 20.3, 4);
+    AA.lookup(15, 11, "Rosas", 10.2, 5);
+    AA.lookup(1, 14, "Jejeje", 20.3, 4);
+    AA.lookup(17, 11, "Rosas", 10.2, 5);
+    AA.lookup(120, 14, "Jejeje", 20.3, 4);
+    AA.lookup(100, 11, "Rosas", 10.2, 5);
+    AA.lookup(2, 14, "Jejeje", 20.3, 4);
+    
+    AA.PreordenI(AA.raiz);
+	*/
+	AA.raiz = AA.insertar(AA.raiz, 10, 11, "Rosas", 10.2, 100);
+AA.raiz =	AA.insertar(AA.raiz, 12, 14, "Jejeje", 20.3, 4);
+	AA.raiz =AA.insertar(AA.raiz, 15, 11, "Rosas", 10.2, 5);
+AA.raiz =	AA.insertar(AA.raiz, 1, 14, "Jejeje", 20.3, 4);
+AA.raiz =	AA.insertar(AA.raiz, 17, 11, "Rosas", 10.2, 5);
+AA.raiz =	AA.insertar(AA.raiz,120, 14, "Jejeje", 20.3, 4);
+AA.raiz =	AA.insertar(AA.raiz, 100, 11, "Rosas", 10.2, 5);
+AA.raiz =	AA.insertar(AA.raiz, 2, 14, "Jejeje", 20.3, 4);
+
 	
+	AA.PreordenI(AA.raiz);
+	AA.borrar(AA.raiz, 100);
 	
+	cout<<endl<<endl<<endl;
+	
+	AA.PreordenI(AA.raiz);
+	
+/*
 	if (BBB.LeerProveedores() && AVL.LeerSupermercados() && B.LeerClientes())
 		{
 			RN.LeerCategorias(AVL);
@@ -4509,17 +4701,17 @@ int main()
 										
 				Item->facturar();
 				
-				printf ("%.90s\n", "\n///////////////// ¿Desea efectuar la compra? (Y/N) \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n");
+				printf ("%.90s\n", "\n///////////////// ï¿½Desea efectuar la compra? (Y/N) \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n");
 				yes_no = cin.get();
 				
 				if (yes_no == 'Y')
 					{
 					Items.InsertarInicio(Item);
 					
-					ListaProductos.ReducirStock(pro_input, int_cant_input);	
+				//	ListaProductos.ReducirStock(pro_input, int_cant_input);	
 					}
 				cin.sync();	
-					printf ("%.90s\n", "\n///////////////// ¿Desea comprar otro producto? (Y/N) \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n");
+					printf ("%.90s\n", "\n///////////////// ï¿½Desea comprar otro producto? (Y/N) \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n");
 					char comprar_otra_vez;
 					//std::getline(std::cin,comprar_otra_vez);
 					comprar_otra_vez = cin.get();
@@ -4559,6 +4751,6 @@ int main()
 		}
 	else{
 		return 0;
-	}
-
 	}*/
+
+	}
