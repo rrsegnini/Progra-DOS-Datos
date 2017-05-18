@@ -185,12 +185,14 @@ class Proveedor{
 			cont++;
 		}
 		
+		
+		int cont=0;
 	private:
 		int Codigo;
 		string Nombre;
 		string Direccion;
 		int Telefono;
-		int cont=0;
+		
 		
 		
 };
@@ -466,6 +468,7 @@ class Binario{
 		bool LeerProveedores();
 		
 		bool VerificarProveedor(NodoBinario *R, int cod);
+		Proveedor* ProveedorMayoresVentas(NodoBinario *R);
 		
 	private:
 		NodoBinario* raiz;
@@ -540,6 +543,37 @@ bool Binario::VerificarProveedor(NodoBinario *R, int cod){
 	
 		}
 	}
+	
+Proveedor* Binario::ProveedorMayoresVentas(NodoBinario *R){
+	Proveedor* Nada;
+	Nada->cont = 0;
+	if(R==NULL){
+		return Nada;
+	
+	}
+	
+	if(R->Hder==NULL & R->Hizq == NULL){
+		return R->valorP;
+	
+	}else{
+		Proveedor* izq = ProveedorMayoresVentas(R->Hizq);
+		Proveedor* der = ProveedorMayoresVentas(R->Hder);
+		if (R->valorP->getCont() > izq->getCont() & R->valorP->getCont() > der->getCont()){
+			return R->valorP;
+		}
+		
+		if (izq->getCont() > R->valorP->getCont() & izq->getCont() > der->getCont()){
+			return izq;
+		}
+		
+		if (der->getCont() > R->valorP->getCont() & der->getCont() > izq->getCont()){
+			return der;
+		}
+		
+	
+		}
+	}
+	
 
 void Binario::InordenR(NodoBinario *R){
 	
@@ -4554,6 +4588,29 @@ AA.raiz =	AA.insertar(AA.raiz, 2, 14, "Jejeje", 20.3, 4);
 	cout<<endl<<endl<<endl;
 	
 	AA.PreordenI(AA.raiz);
+	
+	
+	Proveedor* a = new Proveedor(42, "Robs", "Por ahi", 2345654);
+	a->sumarCont();
+	a->sumarCont();
+	BBB.InsertaNodo(a);
+	
+	Proveedor* b = new Proveedor(34, "Tats", "Mercedes", 34455645);
+	b->sumarCont();
+	b->sumarCont();
+	b->sumarCont();
+	b->sumarCont();
+	
+	BBB.InsertaNodo(b);
+	
+	Proveedor* c = new Proveedor(90, "Jeje", "JKJKJKJ", 89786756);
+	//c.sumarCont();
+	BBB.InsertaNodo(c);
+	
+	BBB.PreordenR(BBB.RetornarRaiz());
+	
+	Proveedor* d = BBB.ProveedorMayoresVentas(BBB.RetornarRaiz());
+	cout<<"Cont: "<<d->getNombre()<<endl;
 	
 /*
 	if (BBB.LeerProveedores() && AVL.LeerSupermercados() && B.LeerClientes())
