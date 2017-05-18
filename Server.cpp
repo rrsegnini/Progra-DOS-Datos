@@ -28,6 +28,10 @@ int main()
 	int int_pro_input;
 	bool SALIR=false;
 	
+	int int_borrarSuper;
+	int int_borrarCat;
+	int	int_borrarProd;
+	
 	listaDC Items;
 	listaDC	Ventas;
 	listaDC Ventas2;
@@ -91,6 +95,18 @@ int main()
 			
 			char *intro_msg = "||||||||||||||||||||||||||||||||Bienvenido al sistema|||||||||||||||||||||||||||||||||||||||\r\n";
 			send(client, intro_msg, strlen(intro_msg), 0);
+			
+			/*
+			char *opciones = "Ingrese 1 para ventas y 2 para borrar un producto\r\n";
+			send(client, opciones, strlen(intro_msg), 0);
+			
+			
+			
+			if (buffer[0] == '1'){
+			
+			*/
+			
+			//recv(client, buffer, sizeof(buffer), 0);
 			
 			if (BBB.LeerProveedores() && AVL.LeerSupermercados() && B.LeerClientes())
 				{
@@ -166,6 +182,7 @@ int main()
 						
 						if (B.VerificarCliente(B.raizB, cod_cliente_input_int)){
 							Desc = true;
+							
 						}
 						
 						cout<<"------------------------ Supermercados disponibles: ------------------------"<<endl;
@@ -193,20 +210,24 @@ int main()
 			    			std::cerr << "******************ERROR******************\n";
 			 				}
 			 				
-			 				if (AVL.VerificarSupermercado(AVL.raiz, int_super_input)){
+			 				RN = AVL.BuscarSupermercado(AVL.raiz, int_super_input);
+			 				
+			 				if (AVL.VerificarSupermercado(AVL.raiz, int_super_input) && RN.raiz != NULL){
 			 					break;
 							 }
 							
 							memset(buffer, 0, sizeof(buffer));
+						
+							
+							cout<<"No hay categorias disponibles en este supermercado"<<endl;					
+							
 						}
-						
-						
-						RN = AVL.BuscarSupermercado(AVL.raiz, int_super_input);
 						
 						cout<<"------------------------ Categorias de productos disponibles: ------------------------"<<endl;
 						
 		
 						RN.InordenRN(RN.raiz);
+						
 						
 						
 						//cout<<"\nIngrese el codigo de la categoria: ";
@@ -226,10 +247,12 @@ int main()
 		 				}
 		 				memset(buffer, 0, sizeof(buffer));
 		 				
-						if (RN.VerificarCategoria(RN.raiz, int_cat_input)){
+		 				AA = RN.BuscarCategoria(RN.raiz, int_cat_input);
+		 				
+						if (RN.VerificarCategoria(RN.raiz, int_cat_input) & AA.raiz != NULL){
 							cout<<"------------------------  Productos disponibles en esta categoria: ------------------------"<<endl;//CORRER ESTO PARA ARRIBA
 							
-							AA = RN.BuscarCategoria(RN.raiz, int_cat_input);
+							
 		 				
 		 					AA.PreordenI(AA.raiz);
 							
@@ -273,13 +296,13 @@ int main()
 											catch (std::exception& e) {
 							    				std::cerr << "******************ERROR******************\n";
 							    				
-												;
+												
 							 					}
 							 				
 											memset(buffer, 0, sizeof(buffer));
 											
 							 				if (AA.VerificarStock(AA.raiz, int_pro_input)<int_cant_input){
-												char * error_stock = "******************No hay tantas unidades en stock******************\n";
+												char * error_stock = "******************No hay tantas unidades en stock******************\n Presione ENTER.";
 												send(client, error_stock, strlen(error_stock), 0);
 												//memset(buffer, 0, sizeof(buffer));
 												}
@@ -290,13 +313,17 @@ int main()
 										break;
 								
 							}
+						if (AA.raiz == NULL){
+							cout<<"No hay productos disponibles"<<endl;
+						}
 						
 						//break;
 						}
 						
 					precio = AA.MostrarPrecio(AA.raiz, int_pro_input);
 										
-					ItemFactura* Item = new ItemFactura(cod_input_int, nom_input, Desc,cod_categoria, cat_input, int_cant_input, pro_input, precio, precio*int_cant_input);
+					ItemFactura* Item = new ItemFactura(cod_input_int, nom_input, Desc,int_cat_input, 
+					"", int_cant_input, "", precio, precio*int_cant_input);
 											
 					Item->facturar();
 					
@@ -378,12 +405,79 @@ int main()
         if (SALIR){
 			break;
 		}
- 		}
+ 	/*	}else{
+ 			//int int_borrarSuper;
+	//int int_borrarCat;
+	//int	int_borrarProd
+    	cout<<"Borrar"<<endl;
+    	memset(buffer, 0, sizeof(buffer));
+    	char *borrarSuper = "Ingrese el codigo del supermercado\r\n";
+		send(client, borrarSuper, strlen(borrarSuper), 0);	
+		recv(client, buffer, sizeof(buffer), 0);
+		
+		try{
+			int_borrarSuper = std::atoi(buffer);
+			}
+		catch (std::exception& e) {
+			std::cerr << "******************ERROR******************\n";
+		}
+		memset(buffer, 0, sizeof(buffer));
+		
+		
+		
+		char *borrarCat = "Ingrese el codigo de la categoria\r\n";
+		send(client, borrarCat, strlen(borrarCat), 0);	
+		recv(client, buffer, sizeof(buffer), 0);
+		
+		try{
+			int_borrarCat = std::atoi(buffer);
+			}
+		catch (std::exception& e) {
+			std::cerr << "******************ERROR******************\n";
+		}
+		memset(buffer, 0, sizeof(buffer));
+		
+		
+		
+		char *borrarProd = "Ingrese el codigo del producto\r\n";
+		send(client,borrarProd, strlen(borrarProd), 0);	
+		recv(client, buffer, sizeof(buffer), 0);
+		try{
+			int_borrarProd = std::atoi(buffer);
+			}
+		catch (std::exception& e) {
+			std::cerr << "******************ERROR******************\n";
+		}
+		memset(buffer, 0, sizeof(buffer));
+		
+		AVL.LeerSupermercados();
+		RN.LeerCategorias(AVL);
+		AA.LeerProductos(AVL);
+		RN = AVL.BuscarSupermercado(AVL.raiz, int_borrarCat);
+		AA = RN.BuscarCategoria(RN.raiz, int_borrarProd);
+		
+		AA.borrar(AA.raiz, int_borrarProd);
+		
+		AA.PreordenI(AA.raiz);
+		
+	//	break;
+		
+		
+		
+		
+		
+			
+    //	return 0;
+		}*/
  	
-       return 0;
+       //return 0;
+       
+    
     }
     closesocket(client);
 	cout << "Client disconnected." << endl;
     return 0;
    }
+}
+
 

@@ -79,7 +79,7 @@ class ItemFactura{
 		int getPrecioUnitario(){
 			return PrecioUnitario;
 		}
-		/*
+		
 		void facturar(){
 			
 			if (Descuento)
@@ -118,7 +118,7 @@ class ItemFactura{
 		}
 		
 	
-		*/
+		
 		
 	private:
 		int CodigoProveedor;
@@ -1426,10 +1426,10 @@ bool ArbolAA::VerificarProducto(nodo *R, int cod){
     		return true;
 		}
     	if (R->valorPp->getCodProducto()<cod){
-    		return VerificarProducto(R->right, cod);
+    		return VerificarProducto(R->Hder, cod);
 		}
     
-        return VerificarProducto(R->left, cod);
+        return VerificarProducto(R->Hizq, cod);
         
     }
 }
@@ -1444,27 +1444,27 @@ int ArbolAA::MostrarPrecio(nodo *R, int cod){
     		return R->valorPp->getPrecioUnit();
 		}
     	if (R->valorPp->getCodProducto()<cod){
-    		return MostrarPrecio(R->right, cod);
+    		return MostrarPrecio(R->Hder, cod);
 		}
     
-        return MostrarPrecio(R->left, cod);
+        return MostrarPrecio(R->Hizq, cod);
         
     }
 }
 
 void ArbolAA::ReducirStock(nodo *R, int cod, int redux){
     if(R==NULL){
-    	cout<<"Producto invalido"<<endl;
+    	cout<<"No hay stock"<<endl;
         return;
     }else{
     	if (R->valorPp->getCodProducto()==cod){
     		return R->valorPp->reducirStock(redux);
 		}
     	if (R->valorPp->getCodProducto()<cod){
-    		return ReducirStock(R->right, cod, redux);
+    		return ReducirStock(R->Hder, cod, redux);
 		}
     
-        return ReducirStock(R->left, cod, redux);
+        return ReducirStock(R->Hizq, cod, redux);
         
     }
 }
@@ -1478,10 +1478,10 @@ int ArbolAA::VerificarStock(nodo *R, int cod){
     		return R->valorPp->getCantidadStock();
 		}
     	if (R->valorPp->getCodProducto()<cod){
-    		return VerificarStock(R->right, cod);
+    		return VerificarStock(R->Hder, cod);
 		}
     
-        return VerificarStock(R->left, cod);
+        return VerificarStock(R->Hizq, cod);
         
     }
 }
@@ -1880,6 +1880,19 @@ bool ArbolB::VerificarCliente(ApuntadorPagina Raiz, int cod){
             nodo* Recorrido = Raiz->Claves->ObtenerApuntadorClave(I);
 
             if (Recorrido->valorCl->getCedula() == cod){
+            	cout<<"CLIENTE FRECUENTEEEEE"<<endl;
+            	cout<<"CLIENTE FRECUENTEEEEE"<<endl;
+            	cout<<"CLIENTE FRECUENTEEEEE"<<endl;
+            	cout<<"CLIENTE FRECUENTEEEEE"<<endl;
+            	cout<<"CLIENTE FRECUENTEEEEE"<<endl;
+            	cout<<"CLIENTE FRECUENTEEEEE"<<endl;
+            	cout<<"CLIENTE FRECUENTEEEEE"<<endl;
+            	cout<<"CLIENTE FRECUENTEEEEE"<<endl;
+            	cout<<"CLIENTE FRECUENTEEEEE"<<endl;
+            	cout<<"CLIENTE FRECUENTEEEEE"<<endl;
+            	cout<<"CLIENTE FRECUENTEEEEE"<<endl;
+            	cout<<"CLIENTE FRECUENTEEEEE"<<endl;
+            	cout<<"CLIENTE FRECUENTEEEEE"<<endl;
             	return true;
 			}
             
@@ -2551,7 +2564,7 @@ ArbolAA ArbolRN::BuscarCategoria(nodo *ra, int _codP, int _codC, string _nomC, f
        
         if(_codC==ra->valorC->getCodigo()){
 			//ra->arbolaa.lookup(_codP, _codC, _nomC, _precio, _stock);
-			ra->arbolaa.insertar(ra->arbolaa.raiz, _codP, _codC, _nomC, _precio, _stock);
+			ra->arbolaa.raiz = ra->arbolaa.insertar(ra->arbolaa.raiz, _codP, _codC, _nomC, _precio, _stock);
         	return ra->arbolaa;
         }
 
@@ -4481,7 +4494,7 @@ void listaDC::ImprimirFactura(){
 	myfile.close();	
 		}
 
-
+/*
 int main()
 	{
 
@@ -4571,7 +4584,7 @@ int main()
     AA.lookup(2, 14, "Jejeje", 20.3, 4);
     
     AA.PreordenI(AA.raiz);
-	*/
+	
 	AA.raiz = AA.insertar(AA.raiz, 10, 11, "Rosas", 10.2, 100);
 AA.raiz =	AA.insertar(AA.raiz, 12, 14, "Jejeje", 20.3, 4);
 	AA.raiz =AA.insertar(AA.raiz, 15, 11, "Rosas", 10.2, 5);
@@ -4808,6 +4821,6 @@ AA.raiz =	AA.insertar(AA.raiz, 2, 14, "Jejeje", 20.3, 4);
 		}
 	else{
 		return 0;
-	}*/
+	}*
 
-	}
+	}*/
